@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PREMUGS — Painel de Avaliação Institucional</title>
+
+<!-- Fontes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@600;700&display=swap" rel="stylesheet">
+
+<!-- Bibliotecas externas via cdnjs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<style>
+  /* ---------- Tokens de design ---------- */
+  :root {
+    --bg: #f5f7f8;
+    --card: #ffffff;
+    --border: #e4e9ec;
+    --border-strong: #d3dade;
+    --text: #15252e;
+    --text-muted: #5a6b74;
+    --text-soft: #88969e;
+
+    /* Paleta institucional saúde: azul-petróleo + verde-petróleo */
+    --petrol-900: #0f3b46;
+    --petrol-700: #1a5c6b;
+    --petrol-500: #2d8290;
+    --petrol-300: #6fb0b9;
+    --petrol-100: #e2eef0;
+
+    --teal-600: #1f8a7a;
+    --teal-400: #5cb5a3;
+
+    --slate-600: #4a5a63;
+    --slate-300: #9ba9b1;
+
+    /* Sinalização semafórica (sóbria, não berrante) */
+    --good:    #2d8a5f;
+    --good-bg: #e6f1ea;
+    --mid:     #b07a1f;
+    --mid-bg:  #f7eedb;
+    --low:     #b04a3e;
+    --low-bg:  #f5e1dd;
+
+    --radius-lg: 14px;
+    --radius-md: 10px;
+    --radius-sm: 6px;
+
+    --shadow-sm: 0 1px 2px rgba(15, 59, 70, 0.04);
+    --shadow-md: 0 1px 3px rgba(15, 59, 70, 0.06), 0 2px 8px rgba(15, 59, 70, 0.04);
+
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-serif: "Source Serif 4", Georgia, serif;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    color: var(--text);
+    background: var(--bg);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--petrol-500); }
+
+  /* ---------- Layout ---------- */
+  .app {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 28px 64px;
+  }
+
+  /* ---------- Cabeçalho ---------- */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+  }
+  .header-brand {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .brand-mark {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--petrol-700), var(--teal-600));
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.02em;
+    flex-shrink: 0;
+  }
+  .header h1 {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    margin: 0 0 4px;
+    color: var(--text);
+  }
+  .header .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .header .eyebrow {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--petrol-500);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .header-meta {
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    flex-shrink: 0;
+  }
+  .header-meta .meta-label {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 10px;
+    color: var(--text-soft);
+    font-weight: 600;
+  }
+  .header-meta .meta-value {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* ---------- Filtro de públicos ---------- */
+  .filter-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .filter-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-soft);
+    font-weight: 600;
+  }
+  .filter-tabs {
+    display: flex;
+    gap: 4px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    box-shadow: var(--shadow-sm);
+  }
+  .filter-tab {
+    border: none;
+    background: transparent;
+    font: inherit;
+    color: var(--text-muted);
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 120ms ease, color 120ms ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .filter-tab:hover { color: var(--text); background: var(--petrol-100); }
+  .filter-tab.is-active {
+    background: var(--petrol-700);
+    color: #fff;
+  }
+  .filter-tab .count {
+    font-size: 11px;
+    background: rgba(255,255,255,0.18);
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+  }
+  .filter-tab:not(.is-active) .count {
+    background: var(--petrol-100);
+    color: var(--petrol-700);
+  }
+
+  /* ---------- Cards de KPI ---------- */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--petrol-500);
+  }
+  .kpi.kpi--good::before { background: var(--good); }
+  .kpi.kpi--low::before  { background: var(--low); }
+  .kpi-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-soft);
+    font-weight: 600;
+  }
+  .kpi-value {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 1.1;
+    color: var(--text);
+    letter-spacing: -0.02em;
+    margin-top: 6px;
+  }
+  .kpi-value .unit {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-family: var(--font-sans);
+    margin-left: 2px;
+  }
+  .kpi-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .kpi-sub strong { color: var(--text); font-weight: 600; }
+
+  /* ---------- Grid de gráficos ---------- */
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text);
+    margin: 0 0 2px;
+    letter-spacing: -0.01em;
+  }
+  .card-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin: 0;
+  }
+  .card-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--petrol-700);
+    background: var(--petrol-100);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+  }
+  .chart-wrap.h-tall { height: 340px; }
+  .chart-wrap.h-med  { height: 320px; }
+  .chart-wrap.h-comp { height: 360px; }
+
+  /* Card de comparação ocupa a largura toda */
+  .card-comparison { grid-column: 1 / -1; }
+
+  /* ---------- Tabela / grade de dimensões ---------- */
+  .dim-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .dim-table th, .dim-table td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .dim-table thead th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-soft);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-strong);
+  }
+  .dim-table tbody tr:last-child td { border-bottom: none; }
+  .dim-table tbody tr:hover { background: #fafbfb; }
+  .dim-name { font-weight: 500; color: var(--text); }
+  .dim-bar {
+    position: relative;
+    width: 180px;
+    height: 6px;
+    background: #eef1f3;
+    border-radius: 3px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+  .dim-bar > span {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--petrol-500);
+  }
+  .score {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .pill::before {
+    content: "";
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .pill--good { color: var(--good); background: var(--good-bg); }
+  .pill--mid  { color: var(--mid);  background: var(--mid-bg);  }
+  .pill--low  { color: var(--low);  background: var(--low-bg);  }
+
+  /* ---------- Estados (loading / erro) ---------- */
+  .state {
+    display: none;
+    padding: 60px 24px;
+    text-align: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    color: var(--text-muted);
+    margin: 24px 0;
+  }
+  .state.is-visible { display: block; }
+  .state-title {
+    font-family: var(--font-serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 6px;
+  }
+  .spinner {
+    width: 32px; height: 32px;
+    border: 3px solid var(--petrol-100);
+    border-top-color: var(--petrol-500);
+    border-radius: 50%;
+    animation: spin 800ms linear infinite;
+    margin: 0 auto 14px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .dashboard { display: none; }
+  .dashboard.is-visible { display: block; }
+
+  /* ---------- Footer ---------- */
+  .footer {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    font-size: 12px;
+    color: var(--text-soft);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* ---------- Responsivo (tablet) ---------- */
+  @media (max-width: 1080px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    .chart-wrap.h-tall, .chart-wrap.h-med { height: 300px; }
+  }
+  @media (max-width: 640px) {
+    .app { padding: 20px 16px 48px; }
+    .header { flex-direction: column; }
+    .header-meta { text-align: left; }
+    .filter-tabs { width: 100%; overflow-x: auto; }
+    .kpi-value { font-size: 26px; }
+    .dim-bar { width: 100px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ===== Cabeçalho ===== -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="brand-mark" aria-hidden="true">P</div>
+      <div>
+        <div class="eyebrow">Avaliação Institucional · 2026</div>
+        <h1>PREMUGS — Painel de Resultados</h1>
+        <p class="subtitle">Programa de Residência Multiprofissional em Gestão em Saúde · Secretaria Municipal de Saúde de Florianópolis</p>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="meta-label">Última atualização</div>
+      <div class="meta-value" id="meta-data">—</div>
+      <div class="meta-label" style="margin-top:8px;">Formulário</div>
+      <div class="meta-value"><a href="https://forms.gle/LQcnRVZ7UfAKbvpg7" target="_blank" rel="noopener">forms.gle/LQcnRVZ7UfAKbvpg7</a></div>
+    </div>
+  </header>
+
+  <!-- Estado: carregando -->
+  <div class="state is-visible" id="state-loading">
+    <div class="spinner" aria-hidden="true"></div>
+    <p class="state-title">Carregando dados…</p>
+    <p>Buscando respostas mais recentes da avaliação institucional.</p>
+  </div>
+
+  <!-- Estado: erro -->
+  <div class="state" id="state-error">
+    <p class="state-title">Não foi possível carregar os dados</p>
+    <p id="state-error-msg">Verifique a conexão ou tente novamente em instantes.</p>
+  </div>
+
+  <!-- ===== Conteúdo do dashboard ===== -->
+  <div class="dashboard" id="dashboard">
+
+    <!-- Filtro de público -->
+    <div class="filter-bar">
+      <span class="filter-label">Filtrar por público</span>
+      <div class="filter-tabs" id="filter-tabs" role="tablist"></div>
+    </div>
+
+    <!-- KPIs -->
+    <section class="kpi-grid" id="kpi-grid"></section>
+
+    <!-- Gráficos principais (barras + radar) -->
+    <section class="charts-grid">
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Média por dimensão</h2>
+            <p class="card-sub">Escala Likert 1–5 · <span id="bar-scope-label">todos os públicos</span></p>
+          </div>
+          <span class="card-tag">Barras</span>
+        </div>
+        <div class="chart-wrap h-tall"><canvas id="chart-bars"></canvas></div>
+      </article>
+
+      <article class="card">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Perfil das dimensões</h2>
+            <p class="card-sub">Visão de equilíbrio entre os cinco eixos</p>
+          </div>
+          <span class="card-tag">Radar</span>
+        </div>
+        <div class="chart-wrap h-med"><canvas id="chart-radar"></canvas></div>
+      </article>
+
+      <!-- Comparação entre públicos (só quando "Todos") -->
+      <article class="card card-comparison" id="card-comparison">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Comparação entre públicos por dimensão</h2>
+            <p class="card-sub">Médias lado a lado · Residentes, Preceptores, Tutores e Coordenação</p>
+          </div>
+          <span class="card-tag">Barras agrupadas</span>
+        </div>
+        <div class="chart-wrap h-comp"><canvas id="chart-grouped"></canvas></div>
+      </article>
+
+      <!-- Tabela de dimensões -->
+      <article class="card card-comparison">
+        <div class="card-header">
+          <div>
+            <h2 class="card-title">Detalhamento por dimensão</h2>
+            <p class="card-sub">Nota média, status semafórico e participação relativa</p>
+          </div>
+          <span class="card-tag">Tabela</span>
+        </div>
+        <table class="dim-table" id="dim-table">
+          <thead>
+            <tr>
+              <th style="width:32%">Dimensão</th>
+              <th style="width:38%">Média</th>
+              <th style="width:15%">Status</th>
+              <th style="width:15%">Variação vs. média geral</th>
+            </tr>
+          </thead>
+          <tbody id="dim-table-body"></tbody>
+        </table>
+      </article>
+    </section>
+
+    <footer class="footer">
+      <span>PREMUGS · Secretaria Municipal de Saúde de Florianópolis</span>
+      <span>Painel somente leitura · dados agregados</span>
+    </footer>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   1) CAMADA DE DADOS  (PONTO DE SUBSTITUIÇÃO)
+   ---------------------------------------------------------------------
+   Esta seção é toda a integração com a fonte de dados.
+   Hoje há TRÊS fontes possíveis, controladas pela constante FONTE_DADOS:
+
+   • "mock"        → usa dados pré-agregados embarcados no arquivo
+                     (útil para desenvolvimento e fallback).
+   • "csv"         → baixa o CSV publicado da planilha (Arquivo →
+                     Compartilhar → Publicar na web → CSV).
+   • "sheets-api"  → consulta a Google Sheets API v4 (recomendado para
+                     produção: aceita planilhas privadas via API Key
+                     + permissão de leitura "qualquer pessoa com o link").
+
+   A função pública carregarDados() é o único ponto de entrada.
+   Ela devolve sempre o mesmo formato:
+
+   {
+     atualizadoEm: "20/05/2026",
+     publicos: {
+       Residentes:  { n: 22, dimensoes: { Pedagógica: 3.8, ... } },
+       Preceptores: { n:  9, dimensoes: { ... } },
+       Tutores:     { n:  6, dimensoes: { ... } },
+       Coordenação: { n:  3, dimensoes: { ... } }
+     }
+   }
+   ===================================================================== */
+
+// ─── CONFIGURAÇÃO ──────────────────────────────────────────────────────
+// Troque para "sheets-api" quando a planilha estiver pronta na Vercel.
+const FONTE_DADOS = "mock";   // "mock" | "csv" | "sheets-api"
+
+// Para FONTE_DADOS === "sheets-api":
+//   - SHEET_ID:  o id da planilha (parte da URL entre /d/ e /edit)
+//   - SHEET_RANGE: aba e faixa em notação A1 (ex.: "Respostas!A1:EZ")
+//   - SHEETS_API_KEY: chave de API do Google Cloud Console
+//        (restrinja-a por referrer HTTP ao domínio da Vercel)
+//   - A planilha precisa estar com acesso "qualquer pessoa com o link
+//        pode visualizar". Não precisa publicar na web.
+const SHEET_ID       = "";
+const SHEET_RANGE    = "Respostas ao formulário 1!A1:EZ";
+const SHEETS_API_KEY = "";
+
+// Para FONTE_DADOS === "csv":
+//   URL do CSV publicado em Arquivo → Compartilhar → Publicar na web.
+const CSV_URL = "";   // ex.: "https://docs.google.com/spreadsheets/d/e/.../pub?output=csv"
+
+// ─── VOCABULÁRIO ───────────────────────────────────────────────────────
+const DIMENSOES = ["Pedagógica", "Relacional", "Organizacional", "Governança", "Sustentabilidade"];
+const PUBLICOS  = ["Residentes", "Preceptores", "Tutores", "Coordenação"];
+
+// Mapa: como o Google Forms grava o papel  →  rótulo usado no painel
+const ROTULO_PUBLICO = {
+  "Residente":     "Residentes",
+  "Preceptor(a)":  "Preceptores",
+  "Tutor(a)":      "Tutores",
+  "Coordenação":   "Coordenação"
+};
+
+/* MAPEAMENTO DE COLUNAS (índice 0-based)
+   Como o formulário tem 4 seções (uma por público) e cada respondente
+   preenche apenas a sua, cada público tem um BLOCO DIFERENTE de colunas
+   dentro da mesma planilha. Estes índices correspondem ao formulário
+   original do PREMUGS. Se a estrutura do formulário mudar, basta
+   ajustar os índices abaixo. */
+const COLUNAS_POR_PUBLICO = {
+  "Residente": {
+    "Pedagógica":      [6, 7, 8, 9, 10],
+    "Relacional":      [12, 13, 14, 15, 16, 17, 18],
+    "Organizacional":  [20, 21, 22, 23, 24],
+    "Governança":      [26, 27, 28, 29, 30],
+    "Sustentabilidade":[32, 33, 34, 35, 36]
+  },
+  "Preceptor(a)": {
+    "Pedagógica":      [42, 43, 44, 45, 46],
+    "Relacional":      [48, 49, 50, 51, 52, 53],
+    "Organizacional":  [55, 56, 57, 58, 59],
+    "Governança":      [61, 62, 63, 64, 65],
+    "Sustentabilidade":[67, 68, 69, 70, 71]
+  },
+  "Tutor(a)": {
+    "Pedagógica":      [77, 78, 79, 80, 81],
+    "Relacional":      [83, 84, 85, 86, 87, 88],
+    "Organizacional":  [90, 91, 92, 93, 94],
+    "Governança":      [96, 97, 98, 99, 100],
+    "Sustentabilidade":[102, 103, 104, 105, 106]
+  },
+  "Coordenação": {
+    "Pedagógica":      [112, 113, 114, 115, 116],
+    "Relacional":      [118, 119, 120, 121, 122],
+    "Organizacional":  [124, 125, 126, 127, 128],
+    "Governança":      [130, 131, 132, 133, 134],
+    "Sustentabilidade":[136, 137, 138, 139, 140]
+  }
+};
+const COLUNA_PAPEL = 1;       // "Qual é o seu papel no PREMUGS?"
+const COLUNA_CARIMBO = 0;     // Carimbo de data/hora
+
+// ─── PONTO DE ENTRADA ──────────────────────────────────────────────────
+async function carregarDados() {
+  if (FONTE_DADOS === "sheets-api") {
+    const linhas = await buscarDoSheetsAPI();
+    return agregarRespostas(linhas);
+  }
+  if (FONTE_DADOS === "csv") {
+    const linhas = await buscarDoCSV();
+    return agregarRespostas(linhas);
+  }
+  // mock padrão
+  return mockAgregado();
+}
+
+// ─── A) Google Sheets API v4 ───────────────────────────────────────────
+// Retorna a planilha bruta como um array de arrays (linhas × colunas),
+// já SEM o cabeçalho. Mesmo formato consumido por agregarRespostas().
+async function buscarDoSheetsAPI() {
+  if (!SHEET_ID || !SHEETS_API_KEY) {
+    throw new Error("SHEET_ID ou SHEETS_API_KEY não configurados.");
+  }
+  const url =
+    `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}` +
+    `/values/${encodeURIComponent(SHEET_RANGE)}` +
+    `?key=${SHEETS_API_KEY}&majorDimension=ROWS&valueRenderOption=UNFORMATTED_VALUE`;
+
+  const resp = await fetch(url);
+  if (!resp.ok) {
+    const txt = await resp.text();
+    throw new Error(`Sheets API ${resp.status}: ${txt}`);
+  }
+  const json = await resp.json();
+  const valores = json.values || [];
+  // Remove o cabeçalho (primeira linha)
+  return valores.slice(1);
+}
+
+// ─── B) CSV publicado ──────────────────────────────────────────────────
+async function buscarDoCSV() {
+  if (!CSV_URL) throw new Error("CSV_URL não configurada.");
+  return new Promise((resolve, reject) => {
+    Papa.parse(CSV_URL, {
+      download: true,
+      header: false,        // mantemos como array de arrays para casar com Sheets API
+      skipEmptyLines: true,
+      complete: (res) => resolve(res.data.slice(1)), // descarta header
+      error: (err) => reject(err)
+    });
+  });
+}
+
+// ─── AGREGAÇÃO ─────────────────────────────────────────────────────────
+/* Consome um array de linhas (array de arrays), identifica o público de
+   cada respondente pela coluna "Qual é o seu papel no PREMUGS?" e
+   calcula a média por dimensão usando o mapa COLUNAS_POR_PUBLICO. */
+function agregarRespostas(linhas) {
+  const acc = {};
+  PUBLICOS.forEach(p => {
+    acc[p] = { n: 0, somas: {}, contagens: {} };
+    DIMENSOES.forEach(d => { acc[p].somas[d] = 0; acc[p].contagens[d] = 0; });
+  });
+
+  let ultimaData = null;
+
+  for (const linha of linhas) {
+    if (!linha || !linha.length) continue;
+    const papel = String(linha[COLUNA_PAPEL] || "").trim();
+    const mapaCols = COLUNAS_POR_PUBLICO[papel];
+    if (!mapaCols) continue;
+    const pub = ROTULO_PUBLICO[papel];
+
+    acc[pub].n += 1;
+
+    // Acompanha a data mais recente para o "Última atualização"
+    const dataStr = String(linha[COLUNA_CARIMBO] || "").trim();
+    if (dataStr) ultimaData = dataStr;
+
+    for (const dim of DIMENSOES) {
+      for (const colIdx of mapaCols[dim]) {
+        const raw = linha[colIdx];
+        const v = typeof raw === "number" ? raw : parseFloat(String(raw || "").replace(",", "."));
+        if (Number.isFinite(v) && v >= 1 && v <= 5) {
+          acc[pub].somas[dim] += v;
+          acc[pub].contagens[dim] += 1;
+        }
+      }
+    }
+  }
+
+  const publicos = {};
+  PUBLICOS.forEach(p => {
+    const dims = {};
+    DIMENSOES.forEach(d => {
+      dims[d] = acc[p].contagens[d] ? acc[p].somas[d] / acc[p].contagens[d] : 0;
+    });
+    publicos[p] = { n: acc[p].n, dimensoes: dims };
+  });
+
+  return {
+    atualizadoEm: formatarData(ultimaData) || new Date().toLocaleDateString("pt-BR"),
+    publicos
+  };
+}
+
+// Tenta extrair só a parte da data de um carimbo "20/05/2026 14:38:16"
+function formatarData(s) {
+  if (!s) return null;
+  const m = String(s).match(/(\d{1,2}\/\d{1,2}\/\d{2,4})/);
+  return m ? m[1] : s;
+}
+
+// ─── C) Mock (médias reais calculadas a partir do CSV de exemplo) ──────
+function mockAgregado() {
+  return {
+    atualizadoEm: "24/05/2026",
+    publicos: {
+      "Residentes":  { n: 22, dimensoes: { "Pedagógica": 3.77, "Relacional": 3.58, "Organizacional": 3.65, "Governança": 3.81, "Sustentabilidade": 3.66 } },
+      "Preceptores": { n:  9, dimensoes: { "Pedagógica": 3.80, "Relacional": 3.83, "Organizacional": 3.56, "Governança": 3.67, "Sustentabilidade": 3.87 } },
+      "Tutores":     { n:  6, dimensoes: { "Pedagógica": 3.57, "Relacional": 3.47, "Organizacional": 3.73, "Governança": 3.93, "Sustentabilidade": 3.80 } },
+      "Coordenação": { n:  3, dimensoes: { "Pedagógica": 3.73, "Relacional": 4.00, "Organizacional": 3.67, "Governança": 4.33, "Sustentabilidade": 3.67 } }
+    }
+  };
+}
+
+/* =====================================================================
+   2) RENDERIZAÇÃO DO DASHBOARD
+   ===================================================================== */
+
+const fmt = (v) => (Math.round(v * 10) / 10).toFixed(1);
+const els = {
+  loading:  document.getElementById("state-loading"),
+  error:    document.getElementById("state-error"),
+  errorMsg: document.getElementById("state-error-msg"),
+  dash:     document.getElementById("dashboard"),
+  metaData: document.getElementById("meta-data"),
+  tabs:     document.getElementById("filter-tabs"),
+  kpis:     document.getElementById("kpi-grid"),
+  barScopeLabel: document.getElementById("bar-scope-label"),
+  cardComparison: document.getElementById("card-comparison"),
+  tableBody: document.getElementById("dim-table-body")
+};
+
+let dados = null;            // payload completo
+let filtroAtivo = "Todos";   // público selecionado
+let charts = {};             // instâncias do Chart.js
+
+const CORES = {
+  petrol: "#1a5c6b",
+  petrolLight: "#6fb0b9",
+  teal: "#1f8a7a",
+  slate: "#4a5a63",
+  slateLight: "#9ba9b1",
+  border: "#e4e9ec",
+  text: "#15252e",
+  textMuted: "#5a6b74"
+};
+
+// Paleta consistente para os 4 públicos (sóbria)
+const CORES_PUBLICOS = {
+  "Residentes":   "#1a5c6b",
+  "Preceptores":  "#1f8a7a",
+  "Tutores":      "#4a5a63",
+  "Coordenação":  "#6fb0b9"
+};
+
+// Defaults do Chart.js
+function configurarChartDefaults() {
+  Chart.defaults.font.family = '"Inter", sans-serif';
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = CORES.textMuted;
+  Chart.defaults.borderColor = CORES.border;
+  Chart.defaults.plugins.tooltip.backgroundColor = "#15252e";
+  Chart.defaults.plugins.tooltip.padding = 10;
+  Chart.defaults.plugins.tooltip.cornerRadius = 6;
+  Chart.defaults.plugins.tooltip.titleFont = { weight: "600" };
+  Chart.defaults.plugins.legend.labels.boxWidth = 10;
+  Chart.defaults.plugins.legend.labels.boxHeight = 10;
+  Chart.defaults.plugins.legend.labels.usePointStyle = true;
+}
+
+/* Retorna { dimensoes: {...}, n: int } para o filtro atual */
+function recalcular(filtro) {
+  if (filtro === "Todos") {
+    const dims = {};
+    let totalN = 0;
+    DIMENSOES.forEach(d => { dims[d] = 0; });
+    PUBLICOS.forEach(p => {
+      const bloco = dados.publicos[p];
+      totalN += bloco.n;
+      DIMENSOES.forEach(d => { dims[d] += bloco.dimensoes[d] * bloco.n; });
+    });
+    DIMENSOES.forEach(d => { dims[d] = totalN ? dims[d] / totalN : 0; });
+    return { dimensoes: dims, n: totalN };
+  }
+  const bloco = dados.publicos[filtro];
+  return { dimensoes: { ...bloco.dimensoes }, n: bloco.n };
+}
+
+/* Retorna { boa: nome, fraca: nome } */
+function dimensoesExtremas(dims) {
+  let boaNome = null, fracaNome = null;
+  let boaV = -Infinity, fracaV = Infinity;
+  DIMENSOES.forEach(d => {
+    if (dims[d] > boaV)   { boaV = dims[d]; boaNome = d; }
+    if (dims[d] < fracaV) { fracaV = dims[d]; fracaNome = d; }
+  });
+  return { boa: boaNome, boaV, fraca: fracaNome, fracaV };
+}
+
+/* Classificação semafórica:  ≥4 verde · 3–3.99 amarelo · <3 vermelho */
+function classificarNota(v) {
+  if (v >= 4)   return { classe: "good", rotulo: "Forte" };
+  if (v >= 3)   return { classe: "mid",  rotulo: "Atenção" };
+  return         { classe: "low",  rotulo: "Frágil" };
+}
+
+/* ---------- Renderiza abas de filtro ---------- */
+function renderTabs() {
+  const totalGeral = PUBLICOS.reduce((s, p) => s + dados.publicos[p].n, 0);
+
+  const lista = [
+    { id: "Todos", label: "Todos", count: totalGeral }
+  ].concat(PUBLICOS.map(p => ({ id: p, label: p, count: dados.publicos[p].n })));
+
+  els.tabs.innerHTML = lista.map(t => `
+    <button class="filter-tab ${t.id === filtroAtivo ? "is-active" : ""}"
+            data-id="${t.id}" role="tab" aria-selected="${t.id === filtroAtivo}">
+      <span>${t.label}</span>
+      <span class="count">${t.count}</span>
+    </button>
+  `).join("");
+
+  els.tabs.querySelectorAll(".filter-tab").forEach(btn => {
+    btn.addEventListener("click", () => {
+      filtroAtivo = btn.dataset.id;
+      renderTabs();
+      renderTudo();
+    });
+  });
+}
+
+/* ---------- KPIs ---------- */
+function renderKPIs() {
+  const { dimensoes, n } = recalcular(filtroAtivo);
+  const ext = dimensoesExtremas(dimensoes);
+  const mediaGeral = DIMENSOES.reduce((s, d) => s + dimensoes[d], 0) / DIMENSOES.length;
+  const escopo = filtroAtivo === "Todos" ? "todos os públicos" : filtroAtivo.toLowerCase();
+
+  els.kpis.innerHTML = `
+    <div class="kpi">
+      <span class="kpi-label">Respondentes</span>
+      <span class="kpi-value">${n}<span class="unit"> pessoas</span></span>
+      <span class="kpi-sub">Total considerado em <strong>${escopo}</strong></span>
+    </div>
+    <div class="kpi">
+      <span class="kpi-label">Média geral do programa</span>
+      <span class="kpi-value">${fmt(mediaGeral)}<span class="unit"> / 5</span></span>
+      <span class="kpi-sub">Média simples das cinco dimensões</span>
+    </div>
+    <div class="kpi kpi--good">
+      <span class="kpi-label">Dimensão mais bem avaliada</span>
+      <span class="kpi-value">${fmt(ext.boaV)}<span class="unit"> / 5</span></span>
+      <span class="kpi-sub"><strong>${ext.boa}</strong></span>
+    </div>
+    <div class="kpi kpi--low">
+      <span class="kpi-label">Dimensão mais frágil</span>
+      <span class="kpi-value">${fmt(ext.fracaV)}<span class="unit"> / 5</span></span>
+      <span class="kpi-sub"><strong>${ext.fraca}</strong></span>
+    </div>
+  `;
+}
+
+/* ---------- Gráfico de barras (média por dimensão) ---------- */
+function renderBarras() {
+  const { dimensoes } = recalcular(filtroAtivo);
+  const valores = DIMENSOES.map(d => +fmt(dimensoes[d]));
+  // Cor da barra conforme classificação semafórica
+  const coresBarras = valores.map(v => {
+    const c = classificarNota(v).classe;
+    return c === "good" ? "#2d8a5f" : c === "mid" ? "#c89a3a" : "#b04a3e";
+  });
+
+  els.barScopeLabel.textContent = filtroAtivo === "Todos" ? "todos os públicos" : filtroAtivo.toLowerCase();
+
+  if (charts.bars) charts.bars.destroy();
+  charts.bars = new Chart(document.getElementById("chart-bars"), {
+    type: "bar",
+    data: {
+      labels: DIMENSOES,
+      datasets: [{
+        data: valores,
+        backgroundColor: coresBarras,
+        borderRadius: 6,
+        borderSkipped: false,
+        maxBarThickness: 56
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `Média: ${fmt(ctx.parsed.y)} / 5`
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true, max: 5,
+          grid: { color: "#eef1f3" },
+          ticks: { stepSize: 1, callback: (v) => v }
+        },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+/* ---------- Radar ---------- */
+function renderRadar() {
+  const { dimensoes } = recalcular(filtroAtivo);
+  const valores = DIMENSOES.map(d => +fmt(dimensoes[d]));
+
+  if (charts.radar) charts.radar.destroy();
+  charts.radar = new Chart(document.getElementById("chart-radar"), {
+    type: "radar",
+    data: {
+      labels: DIMENSOES,
+      datasets: [{
+        label: filtroAtivo,
+        data: valores,
+        backgroundColor: "rgba(31, 138, 122, 0.18)",
+        borderColor: CORES.teal,
+        borderWidth: 2,
+        pointBackgroundColor: CORES.teal,
+        pointBorderColor: "#fff",
+        pointBorderWidth: 1.5,
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: (ctx) => `${ctx.label}: ${fmt(ctx.parsed.r)} / 5` }
+        }
+      },
+      scales: {
+        r: {
+          min: 0, max: 5,
+          ticks: { stepSize: 1, backdropColor: "transparent", color: CORES.slateLight },
+          grid:   { color: "#eef1f3" },
+          angleLines: { color: "#eef1f3" },
+          pointLabels: { color: CORES.text, font: { size: 12, weight: "500" } }
+        }
+      }
+    }
+  });
+}
+
+/* ---------- Barras agrupadas (todos públicos lado a lado) ---------- */
+function renderAgrupado() {
+  const datasets = PUBLICOS.map(p => ({
+    label: p,
+    data: DIMENSOES.map(d => +fmt(dados.publicos[p].dimensoes[d])),
+    backgroundColor: CORES_PUBLICOS[p],
+    borderRadius: 4,
+    borderSkipped: false,
+    maxBarThickness: 28
+  }));
+
+  if (charts.grouped) charts.grouped.destroy();
+  charts.grouped = new Chart(document.getElementById("chart-grouped"), {
+    type: "bar",
+    data: { labels: DIMENSOES, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom", labels: { padding: 14 } },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: ${fmt(ctx.parsed.y)} / 5`
+          }
+        }
+      },
+      scales: {
+        y: { beginAtZero: true, max: 5, grid: { color: "#eef1f3" }, ticks: { stepSize: 1 } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+/* ---------- Tabela de dimensões ---------- */
+function renderTabela() {
+  const { dimensoes } = recalcular(filtroAtivo);
+  const mediaGeral = DIMENSOES.reduce((s, d) => s + dimensoes[d], 0) / DIMENSOES.length;
+
+  els.tableBody.innerHTML = DIMENSOES.map(d => {
+    const v = dimensoes[d];
+    const c = classificarNota(v);
+    const delta = v - mediaGeral;
+    const deltaTxt = (delta >= 0 ? "+" : "") + fmt(delta);
+    const deltaColor = delta >= 0 ? "var(--good)" : "var(--low)";
+    const pct = (v / 5) * 100;
+    return `
+      <tr>
+        <td class="dim-name">${d}</td>
+        <td>
+          <span class="dim-bar"><span style="width:${pct}%; background:${c.classe === "good" ? "#2d8a5f" : c.classe === "mid" ? "#c89a3a" : "#b04a3e"};"></span></span>
+          <span class="score">${fmt(v)}</span>
+          <span style="color:var(--text-soft); font-size:12px;"> / 5</span>
+        </td>
+        <td><span class="pill pill--${c.classe}">${c.rotulo}</span></td>
+        <td style="color:${deltaColor}; font-weight:600; font-variant-numeric: tabular-nums;">${deltaTxt}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+/* ---------- Orquestração ---------- */
+function renderTudo() {
+  renderKPIs();
+  renderBarras();
+  renderRadar();
+  renderTabela();
+  // Comparação só aparece quando o filtro está em "Todos"
+  els.cardComparison.style.display = (filtroAtivo === "Todos") ? "" : "none";
+  if (filtroAtivo === "Todos") renderAgrupado();
+}
+
+/* ---------- Bootstrap ---------- */
+async function iniciar() {
+  configurarChartDefaults();
+  try {
+    dados = await carregarDados();
+    els.metaData.textContent = dados.atualizadoEm || "—";
+    els.loading.classList.remove("is-visible");
+    els.dash.classList.add("is-visible");
+    renderTabs();
+    renderTudo();
+  } catch (err) {
+    console.error(err);
+    els.loading.classList.remove("is-visible");
+    els.error.classList.add("is-visible");
+    els.errorMsg.textContent = (err && err.message) ? err.message : "Erro inesperado.";
+  }
+}
+
+iniciar();
+</script>
+</body>
+</html>
