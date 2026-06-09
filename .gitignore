@@ -2,3 +2,17 @@
 *.log
 node_modules/
 .vercel
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# env
+.env*.local
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
