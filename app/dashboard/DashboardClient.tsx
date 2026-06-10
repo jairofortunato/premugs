@@ -224,7 +224,7 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
               </span>
               /4.0 · {geral.geralN} respostas
             </p>
-            <div className="mt-3 h-44">
+            <div className="mt-3 h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={geral.geralDistribuicao}>
                   <XAxis
@@ -261,7 +261,7 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
             <p className="mt-0.5 text-xs text-gray-400">
               {geral.recomenda.total} respostas
             </p>
-            <div className="mt-3 h-44">
+            <div className="mt-3 h-64">
               {recomendaData.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>

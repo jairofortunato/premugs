@@ -348,6 +348,12 @@ export function csvToPayload(csv: string): SheetsPayload {
   const respostas: Record<string, string>[] = [];
   const porPapel: Record<string, number> = {};
 
+  // Localiza a coluna do papel pelo cabeçalho — a posição varia conforme o
+  // formulário evolui (hoje é a 3ª coluna, depois de "Ano/ciclo avaliado").
+  const papelIdx = header.findIndex((h) =>
+    norm(h).startsWith("qual e o seu papel")
+  );
+
   for (let r = 1; r < rows.length; r++) {
     const cells = rows[r];
     // ignora linhas completamente vazias
@@ -363,7 +369,7 @@ export function csvToPayload(csv: string): SheetsPayload {
       const val = (cells[c] ?? "").trim();
       if (!(key in obj) || (val && !obj[key])) obj[key] = val;
     }
-    const papel = normalizePapel(cells[1] ?? "");
+    const papel = normalizePapel(cells[papelIdx >= 0 ? papelIdx : 1] ?? "");
     obj["__papel"] = papel;
     respostas.push(obj);
     porPapel[papel] = (porPapel[papel] ?? 0) + 1;
