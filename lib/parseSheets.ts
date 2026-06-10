@@ -478,6 +478,69 @@ export function scorePorDimensao(
   });
 }
 
+// Média de todas as notas quantitativas (1–4) por papel.
+export function mediaPorPapel(
+  respostas: Resposta[]
+): { papel: string; media: number | null; n: number }[] {
+  const acc: Record<string, { soma: number; n: number }> = {};
+  for (const p of PAPEIS) acc[p] = { soma: 0, n: 0 };
+
+  for (const r of respostas) {
+    if (!acc[r.papel]) acc[r.papel] = { soma: 0, n: 0 };
+    for (const q of r.quantitativas) {
+      acc[r.papel].soma += q.valor;
+      acc[r.papel].n += 1;
+    }
+  }
+
+  return Object.entries(acc).map(([papel, { soma, n }]) => ({
+    papel,
+    media: n > 0 ? soma / n : null,
+    n,
+  }));
+}
+
+// Média por dimensão aberta por papel — uma linha por dimensão com uma chave
+// por papel (formato esperado pelo gráfico de barras agrupadas).
+export function mediaPorDimensaoEPapel(
+  respostas: Resposta[]
+): Record<string, string | number | null>[] {
+  const acc: Record<string, Record<string, { soma: number; n: number }>> = {};
+  for (const d of DIMENSOES) acc[d] = {};
+
+  for (const r of respostas) {
+    for (const q of r.quantitativas) {
+      if (!q.dimensao) continue;
+      const porPapel = acc[q.dimensao];
+      if (!porPapel[r.papel]) porPapel[r.papel] = { soma: 0, n: 0 };
+      porPapel[r.papel].soma += q.valor;
+      porPapel[r.papel].n += 1;
+    }
+  }
+
+  return DIMENSOES.map((dimensao) => {
+    const row: Record<string, string | number | null> = { dimensao };
+    for (const [papel, { soma, n }] of Object.entries(acc[dimensao])) {
+      row[papel] = n > 0 ? Number((soma / n).toFixed(2)) : null;
+    }
+    return row;
+  });
+}
+
+// Distribuição de todas as notas quantitativas (1–4) do filtro atual.
+export function distribuicaoNotas(
+  respostas: Resposta[]
+): { nota: number; quantidade: number }[] {
+  const dist: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0 };
+  for (const r of respostas) {
+    for (const q of r.quantitativas) {
+      const nota = Math.round(q.valor);
+      dist[nota] = (dist[nota] ?? 0) + 1;
+    }
+  }
+  return [1, 2, 3, 4].map((nota) => ({ nota, quantidade: dist[nota] ?? 0 }));
+}
+
 // Média por indicador (pergunta) dentro de cada dimensão — alimenta o
 // detalhamento exibido ao clicar em uma dimensão no gráfico.
 export interface IndicadorScore {
@@ -631,6 +694,21 @@ export function respostaMaisRecente(respostas: Resposta[]): string | null {
 
 export function parseTimestamp(s: string): number | null {
   if (!s) return null;
+  // formato ISO-like da planilha: "yyyy/mm/dd hh:mm:ss"
+  const iso = s.match(
+    /(\d{4})\/(\d{1,2})\/(\d{1,2})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?/
+  );
+  if (iso) {
+    const [, y, mo, d, h, mi, se] = iso;
+    return new Date(
+      Number(y),
+      Number(mo) - 1,
+      Number(d),
+      Number(h),
+      Number(mi),
+      Number(se || "0")
+    ).getTime();
+  }
   // formato Google Forms pt-BR: "dd/mm/yyyy hh:mm:ss"
   const m = s.match(
     /(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{1,2})(?::(\d{1,2}))?/
@@ -648,6 +726,17 @@ export function parseTimestamp(s: string): number | null {
   }
   const t = Date.parse(s);
   return Number.isNaN(t) ? null : t;
+}
+
+// Formata um timestamp da planilha como "dd/mm/yyyy hh:mm" (padrão brasileiro).
+export function formatarDataBR(s: string): string {
+  const t = parseTimestamp(s);
+  if (t === null) return s;
+  const d = new Date(t);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(
+    d.getHours()
+  )}:${pad(d.getMinutes())}`;
 }
 
 // Cor por score (vermelho < 2, amarelo 2–3, verde > 3).

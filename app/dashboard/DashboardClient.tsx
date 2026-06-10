@@ -17,6 +17,11 @@ import {
   buildRespostas,
   scorePorDimensao,
   indicadoresPorDimensao,
+  mediaPorPapel,
+  mediaPorDimensaoEPapel,
+  distribuicaoNotas,
+  corPorScore,
+  formatarDataBR,
   agruparQualitativas,
   avaliacaoGeral,
   anosDisponiveis,
@@ -37,6 +42,15 @@ function SectionTitle({ children, sub }: { children: React.ReactNode; sub?: stri
     </div>
   );
 }
+
+const PAPEL_COR_HEX: Record<string, string> = {
+  "Residente(a)": "#2563eb",
+  "Preceptor(a)": "#057a55",
+  "Tutor(a)": "#d97706",
+  "Coordenador(a)": "#7c3aed",
+};
+
+const papelCurto = (p: string) => p.replace("(a)", "");
 
 type Aba = "geral" | "qualitativas" | "individuais";
 
@@ -65,6 +79,16 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
 
   const scores = useMemo(() => scorePorDimensao(filtradas), [filtradas]);
   const indicadores = useMemo(() => indicadoresPorDimensao(filtradas), [filtradas]);
+  const mediasPapel = useMemo(
+    () => mediaPorPapel(filtradas).filter((m) => m.media !== null),
+    [filtradas]
+  );
+  const dimensaoPapel = useMemo(() => mediaPorDimensaoEPapel(filtradas), [filtradas]);
+  const distNotas = useMemo(() => distribuicaoNotas(filtradas), [filtradas]);
+  const papeisPresentes = useMemo(
+    () => PAPEIS.filter((p) => filtradas.some((r) => r.papel === p)),
+    [filtradas]
+  );
   const qualitativas = useMemo(() => agruparQualitativas(filtradas), [filtradas]);
   const geral = useMemo(() => avaliacaoGeral(filtradas), [filtradas]);
   const recente = useMemo(() => respostaMaisRecente(filtradas), [filtradas]);
@@ -192,8 +216,8 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
         />
         <KPICard
           label="Resposta mais recente"
-          value={recente ? recente.split(" ")[0] : "—"}
-          sub={recente ? recente.split(" ").slice(1).join(" ") : undefined}
+          value={recente ? formatarDataBR(recente).split(" ")[0] : "—"}
+          sub={recente ? formatarDataBR(recente).split(" ").slice(1).join(" ") : undefined}
           accent="gray"
         />
       </div>
@@ -204,6 +228,129 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
           Dimensões avaliadas
         </SectionTitle>
         <DimensionChart scores={scores} indicadores={indicadores} />
+      </section>
+
+      {/* ---------- Comparativos por papel ---------- */}
+      <section>
+        <SectionTitle sub="Médias das notas quantitativas (escala 1–4) comparadas entre os papéis">
+          Comparativos por papel
+        </SectionTitle>
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          {/* Média geral por papel */}
+          <div className="rounded-lg border border-gray-100 bg-white p-5 shadow-card">
+            <p className="text-sm font-semibold text-gray-800">
+              Média de notas por papel
+            </p>
+            <p className="mt-0.5 text-xs text-gray-400">
+              Média de todas as perguntas quantitativas respondidas por cada papel
+            </p>
+            <div className="mt-3 h-64">
+              {mediasPapel.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={mediasPapel}>
+                    <XAxis
+                      dataKey="papel"
+                      tickFormatter={papelCurto}
+                      fontSize={11}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis domain={[0, 4]} fontSize={11} width={24} tickLine={false} axisLine={false} />
+                    <Tooltip
+                      cursor={{ fill: "#f3f4f6" }}
+                      formatter={(v, _n, item) => [
+                        `${Number(v).toFixed(1)}/4.0 · ${item?.payload?.n ?? 0} notas`,
+                        "Média",
+                      ]}
+                      labelFormatter={(l) => papelCurto(String(l))}
+                    />
+                    <Bar dataKey="media" radius={[4, 4, 0, 0]}>
+                      {mediasPapel.map((m) => (
+                        <Cell key={m.papel} fill={PAPEL_COR_HEX[m.papel] ?? "#6b7280"} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-gray-300">
+                  Sem dados
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Distribuição de todas as notas */}
+          <div className="rounded-lg border border-gray-100 bg-white p-5 shadow-card">
+            <p className="text-sm font-semibold text-gray-800">
+              Distribuição de todas as notas
+            </p>
+            <p className="mt-0.5 text-xs text-gray-400">
+              Quantidade de respostas por nota em todas as perguntas quantitativas
+            </p>
+            <div className="mt-3 h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={distNotas}>
+                  <XAxis
+                    dataKey="nota"
+                    tickFormatter={(v) => `Nota ${v}`}
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis allowDecimals={false} fontSize={11} width={24} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    cursor={{ fill: "#f3f4f6" }}
+                    formatter={(v) => [`${v} respostas`, "Quantidade"]}
+                    labelFormatter={(l) => `Nota ${l}`}
+                  />
+                  <Bar dataKey="quantidade" radius={[4, 4, 0, 0]}>
+                    {distNotas.map((d) => (
+                      <Cell key={d.nota} fill={corPorScore(d.nota)} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Média por dimensão e papel */}
+          <div className="rounded-lg border border-gray-100 bg-white p-5 shadow-card lg:col-span-2">
+            <p className="text-sm font-semibold text-gray-800">
+              Média por dimensão e papel
+            </p>
+            <p className="mt-0.5 text-xs text-gray-400">
+              Como cada papel avalia cada dimensão do programa
+            </p>
+            <div className="mt-3 h-72">
+              {papeisPresentes.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={dimensaoPapel}>
+                    <XAxis dataKey="dimensao" fontSize={11} tickLine={false} axisLine={false} />
+                    <YAxis domain={[0, 4]} fontSize={11} width={24} tickLine={false} axisLine={false} />
+                    <Tooltip
+                      cursor={{ fill: "#f3f4f6" }}
+                      formatter={(v, n) => [`${Number(v).toFixed(1)}/4.0`, papelCurto(String(n))]}
+                    />
+                    <Legend formatter={(v) => papelCurto(String(v))} />
+                    {papeisPresentes.map((p) => (
+                      <Bar
+                        key={p}
+                        dataKey={p}
+                        fill={PAPEL_COR_HEX[p] ?? "#6b7280"}
+                        radius={[4, 4, 0, 0]}
+                        maxBarSize={32}
+                      />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-gray-300">
+                  Sem dados
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ---------- Avaliação Geral ---------- */}
