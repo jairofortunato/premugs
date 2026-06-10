@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { csvToPayload } from "@/lib/parseSheets";
 
 const SHEET_ID =
-  process.env.SHEET_ID || "1AeRD3cebArjru-dOo_iIWsyDuRgjaWO5ZRNexqDbZIY";
+  process.env.SHEET_ID || "1teLW5gF4PnfTb0dTIIhjibGHBcC11_yJieaoXdnzPTk";
 const SHEET_NAME = "Respostas do Formulário 1";
 
 function csvUrl() {

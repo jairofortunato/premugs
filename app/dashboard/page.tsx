@@ -4,7 +4,7 @@ import { csvToPayload, type SheetsPayload } from "@/lib/parseSheets";
 export const revalidate = 60;
 
 const SHEET_ID =
-  process.env.SHEET_ID || "1AeRD3cebArjru-dOo_iIWsyDuRgjaWO5ZRNexqDbZIY";
+  process.env.SHEET_ID || "1teLW5gF4PnfTb0dTIIhjibGHBcC11_yJieaoXdnzPTk";
 const SHEET_NAME = "Respostas do Formulário 1";
 
 async function getData(): Promise<{ payload: SheetsPayload | null; erro: string | null }> {

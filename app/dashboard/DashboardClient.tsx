@@ -16,6 +16,7 @@ import {
 import {
   buildRespostas,
   scorePorDimensao,
+  indicadoresPorDimensao,
   agruparQualitativas,
   avaliacaoGeral,
   anosDisponiveis,
@@ -37,9 +38,18 @@ function SectionTitle({ children, sub }: { children: React.ReactNode; sub?: stri
   );
 }
 
+type Aba = "geral" | "qualitativas" | "individuais";
+
+const ABAS: { id: Aba; label: string }[] = [
+  { id: "geral", label: "Visão geral" },
+  { id: "qualitativas", label: "Qualitativas" },
+  { id: "individuais", label: "Respostas individuais" },
+];
+
 export default function DashboardClient({ payload }: { payload: SheetsPayload }) {
   const todas = useMemo(() => buildRespostas(payload), [payload]);
 
+  const [aba, setAba] = useState<Aba>("geral");
   const [papelFiltro, setPapelFiltro] = useState<string>("Todos");
   const [anoFiltro, setAnoFiltro] = useState<string>("Todos");
 
@@ -54,6 +64,7 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
   }, [todas, papelFiltro, anoFiltro]);
 
   const scores = useMemo(() => scorePorDimensao(filtradas), [filtradas]);
+  const indicadores = useMemo(() => indicadoresPorDimensao(filtradas), [filtradas]);
   const qualitativas = useMemo(() => agruparQualitativas(filtradas), [filtradas]);
   const geral = useMemo(() => avaliacaoGeral(filtradas), [filtradas]);
   const recente = useMemo(() => respostaMaisRecente(filtradas), [filtradas]);
@@ -124,6 +135,34 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
         )}
       </div>
 
+      {/* ---------- Abas ---------- */}
+      <div className="flex gap-1 overflow-x-auto rounded-lg border border-gray-100 bg-white p-1 shadow-card">
+        {ABAS.map((a) => (
+          <button
+            key={a.id}
+            onClick={() => setAba(a.id)}
+            className={`whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              aba === a.id
+                ? "bg-brand-blue text-white"
+                : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            {a.label}
+            {a.id === "qualitativas" && qualitativas.length > 0 && (
+              <span
+                className={`ml-2 rounded-full px-1.5 py-0.5 text-[10px] ${
+                  aba === a.id ? "bg-white/20" : "bg-gray-100 text-gray-500"
+                }`}
+              >
+                {qualitativas.reduce((acc, g) => acc + g.itens.length, 0)}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {aba === "geral" && (
+        <>
       {/* ---------- KPIs ---------- */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <KPICard label="Total de respostas" value={total} accent="blue" />
@@ -161,10 +200,10 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
 
       {/* ---------- Dimensões ---------- */}
       <section className="rounded-lg border border-gray-100 bg-white p-5 shadow-card sm:p-6">
-        <SectionTitle sub="Média das perguntas quantitativas (escala 1–4) por dimensão avaliada">
+        <SectionTitle sub="Média das perguntas quantitativas (escala 1–4) por dimensão avaliada — clique em uma dimensão para ver os indicadores">
           Dimensões avaliadas
         </SectionTitle>
-        <DimensionChart scores={scores} />
+        <DimensionChart scores={scores} indicadores={indicadores} />
       </section>
 
       {/* ---------- Avaliação Geral ---------- */}
@@ -277,22 +316,28 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
           </div>
         </div>
       </section>
+        </>
+      )}
 
       {/* ---------- Qualitativas ---------- */}
-      <section>
-        <SectionTitle sub="Respostas em texto livre, agrupadas por pergunta e papel">
-          Respostas qualitativas
-        </SectionTitle>
-        <QualitativeSection grupos={qualitativas} />
-      </section>
+      {aba === "qualitativas" && (
+        <section>
+          <SectionTitle sub="Respostas em texto livre, agrupadas por pergunta e papel">
+            Respostas qualitativas
+          </SectionTitle>
+          <QualitativeSection grupos={qualitativas} />
+        </section>
+      )}
 
       {/* ---------- Tabela bruta ---------- */}
-      <section>
-        <SectionTitle sub="Clique em uma linha para expandir todas as respostas da pessoa">
-          Respostas individuais
-        </SectionTitle>
-        <ResponsesTable respostas={filtradas} />
-      </section>
+      {aba === "individuais" && (
+        <section>
+          <SectionTitle sub="Clique em uma linha para expandir todas as respostas da pessoa">
+            Respostas individuais
+          </SectionTitle>
+          <ResponsesTable respostas={filtradas} />
+        </section>
+      )}
     </div>
   );
 }

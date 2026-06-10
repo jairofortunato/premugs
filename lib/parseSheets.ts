@@ -19,11 +19,10 @@ export type Papel = (typeof PAPEIS)[number];
 
 export const DIMENSOES = [
   "Pedagógica",
-  "Relações interpessoais",
-  "Feedback",
-  "Comunicação e cultura organizacional",
+  "Relacional",
+  "Organizacional",
   "Governança",
-  "Resultados e sustentabilidade",
+  "Sustentabilidade",
 ] as const;
 
 export type Dimensao = (typeof DIMENSOES)[number];
@@ -178,9 +177,9 @@ function classifyGeral(header: string): Geral {
 
 // Ordem importa: a primeira dimensão cujas palavras-chave casarem vence.
 const DIM_KEYWORDS: { dim: Dimensao; keys: string[] }[] = [
-  { dim: "Feedback", keys: ["feedback"] },
+  { dim: "Relacional", keys: ["feedback"] },
   {
-    dim: "Comunicação e cultura organizacional",
+    dim: "Organizacional",
     keys: [
       "informacoes institucionais",
       "cronograma",
@@ -215,7 +214,7 @@ const DIM_KEYWORDS: { dim: Dimensao; keys: string[] }[] = [
     ],
   },
   {
-    dim: "Relações interpessoais",
+    dim: "Relacional",
     keys: [
       "preceptor",
       "tutor",
@@ -230,7 +229,7 @@ const DIM_KEYWORDS: { dim: Dimensao; keys: string[] }[] = [
     ],
   },
   {
-    dim: "Resultados e sustentabilidade",
+    dim: "Sustentabilidade",
     keys: [
       "sustentabilidade",
       "recursos humanos",
@@ -471,6 +470,46 @@ export function scorePorDimensao(
     const { soma, n } = acc[dimensao];
     return { dimensao, media: n > 0 ? soma / n : null, n };
   });
+}
+
+// Média por indicador (pergunta) dentro de cada dimensão — alimenta o
+// detalhamento exibido ao clicar em uma dimensão no gráfico.
+export interface IndicadorScore {
+  pergunta: string;
+  media: number;
+  n: number;
+}
+
+export function indicadoresPorDimensao(
+  respostas: Resposta[]
+): Record<Dimensao, IndicadorScore[]> {
+  const acc = new Map<
+    string,
+    { dimensao: Dimensao; pergunta: string; soma: number; n: number }
+  >();
+
+  for (const r of respostas) {
+    for (const q of r.quantitativas) {
+      if (!q.dimensao) continue;
+      const key = `${q.dimensao}|${norm(q.pergunta)}`;
+      const cur = acc.get(key);
+      if (cur) {
+        cur.soma += q.valor;
+        cur.n += 1;
+      } else {
+        acc.set(key, { dimensao: q.dimensao, pergunta: q.pergunta, soma: q.valor, n: 1 });
+      }
+    }
+  }
+
+  const out = Object.fromEntries(
+    DIMENSOES.map((d) => [d, [] as IndicadorScore[]])
+  ) as Record<Dimensao, IndicadorScore[]>;
+
+  for (const { dimensao, pergunta, soma, n } of Array.from(acc.values())) {
+    out[dimensao].push({ pergunta, media: soma / n, n });
+  }
+  return out;
 }
 
 // Agrupa perguntas qualitativas por texto (mesclando todos os blocos/perfis).
