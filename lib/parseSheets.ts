@@ -745,3 +745,54 @@ export function corPorScore(score: number): string {
   if (score <= 3) return "#d97706"; // amarelo/âmbar
   return "#057a55"; // verde institucional
 }
+
+// ---------------------------------------------------------------------------
+// 7) Indicadores avaliativos (pergunta-chave -> indicador)
+// ---------------------------------------------------------------------------
+// Cada *indicador* (ex.: "Índice de Evolução de Aprendizado") agrupa, dentro de
+// uma dimensão, as variações da pergunta-chave por público (residente,
+// preceptor, tutor, coordenador). Aqui mapeamos cada texto de pergunta ao nome
+// do indicador correspondente, para exibi-lo acima da pergunta no painel.
+//
+// Para adicionar um indicador, basta listar todas as variações da pergunta
+// (uma por público). A comparação ignora acentos, maiúsculas, pontuação e
+// espaços extras, então pequenas diferenças de formatação não quebram o mapa.
+export const INDICADORES_AVALIATIVOS: { indicador: string; perguntas: string[] }[] =
+  [
+    {
+      indicador: "Índice de Evolução de Aprendizado (teoria-prática)",
+      perguntas: [
+        // Residentes
+        "Os conhecimentos adquiridos nas atividades teóricas aumentaram minha capacidade de atuar e resolver situações encontradas na prática do serviço?",
+        "As aulas e os conteúdos teóricos ajudam realmente a resolver os problemas práticos do dia a dia no serviço?",
+        // Preceptores
+        "Os residentes conseguem aplicar, na prática, os conhecimentos desenvolvidos nas atividades teóricas do programa?",
+        // Tutores
+        "As atividades pedagógicas favorecem a articulação entre teoria e prática na formação dos residentes?",
+        // Coordenadores
+        "O programa promove integração adequada entre conteúdos teóricos e práticas desenvolvidas nos serviços de saúde?",
+      ],
+    },
+  ];
+
+// Normalização mais agressiva para casar perguntas: remove acentos, pontuação
+// e colapsa espaços (perguntas vêm com vírgulas/quebras de linha da planilha).
+function normChave(s: string): string {
+  return norm(s)
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const _indicadorPorPergunta = (() => {
+  const m = new Map<string, string>();
+  for (const { indicador, perguntas } of INDICADORES_AVALIATIVOS) {
+    for (const p of perguntas) m.set(normChave(p), indicador);
+  }
+  return m;
+})();
+
+// Retorna o nome do indicador de uma pergunta-chave, ou null se não mapeada.
+export function indicadorDaPergunta(pergunta: string): string | null {
+  return _indicadorPorPergunta.get(normChave(pergunta)) ?? null;
+}

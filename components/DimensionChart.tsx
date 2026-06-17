@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   corPorScore,
+  indicadorDaPergunta,
   type Dimensao,
   type IndicadorScore,
 } from "@/lib/parseSheets";
@@ -38,13 +39,7 @@ function Barra({ score, fina }: { score: number; fina?: boolean }) {
   );
 }
 
-function Indicadores({
-  itens,
-  dimensao,
-}: {
-  itens: IndicadorScore[];
-  dimensao: Dimensao;
-}) {
+function Indicadores({ itens }: { itens: IndicadorScore[] }) {
   if (itens.length === 0) {
     return (
       <p className="mt-2 rounded-md bg-gray-50 p-3 text-xs text-gray-400">
@@ -54,11 +49,15 @@ function Indicadores({
   }
   return (
     <ul className="mt-2 space-y-3 rounded-md border border-gray-100 bg-gray-50/60 p-3">
-      {itens.map((ind) => (
+      {itens.map((ind) => {
+        const indicador = indicadorDaPergunta(ind.pergunta);
+        return (
         <li key={ind.pergunta}>
-          <span className="mb-1 inline-block rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-blue">
-            {dimensao}
-          </span>
+          {indicador && (
+            <span className="mb-1 inline-block rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-blue">
+              {indicador}
+            </span>
+          )}
           <div className="mb-1 flex items-baseline justify-between gap-3">
             <p className="min-w-0 text-xs leading-snug text-gray-600">
               {ind.pergunta}
@@ -75,7 +74,8 @@ function Indicadores({
           </div>
           <Barra score={ind.media} fina />
         </li>
-      ))}
+        );
+      })}
     </ul>
   );
 }
@@ -139,12 +139,7 @@ export default function DimensionChart({
                 {expandida ? "ocultar indicadores" : "ver indicadores"}
               </p>
             </button>
-            {expandida && (
-              <Indicadores
-                itens={indicadores[dimensao] ?? []}
-                dimensao={dimensao}
-              />
-            )}
+            {expandida && <Indicadores itens={indicadores[dimensao] ?? []} />}
           </div>
         );
       })}
