@@ -35,28 +35,24 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-gray-100">
-      <div className="border-b border-gray-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-          <Image
-            src="/logo-premugs.svg"
-            alt="PREMUGS Avalia — Secretaria Municipal de Saúde de Florianópolis"
-            width={1400}
-            height={360}
-            priority
-            className="h-16 w-auto sm:h-20"
-          />
-        </div>
-      </div>
-
       <header className="bg-brand-blue text-white">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <p className="text-xs font-medium uppercase tracking-wider text-blue-200">
             Avaliação Institucional
           </p>
-          <h1 className="mt-1 text-2xl font-bold sm:text-3xl">
-            PREMUGS Avalia
+          <h1 className="mt-2">
+            <span className="inline-block rounded-lg bg-white px-4 py-3 shadow-sm">
+              <Image
+                src="/logo-premugs.svg"
+                alt="PREMUGS Avalia — Secretaria Municipal de Saúde de Florianópolis"
+                width={1400}
+                height={360}
+                priority
+                className="h-14 w-auto sm:h-16"
+              />
+            </span>
           </h1>
-          <p className="mt-1 max-w-3xl text-sm text-blue-100">
+          <p className="mt-3 max-w-3xl text-sm text-blue-100">
             Programa de Residência Multiprofissional em Gestão em Saúde —
             resultados consolidados das respostas ao formulário.
           </p>
