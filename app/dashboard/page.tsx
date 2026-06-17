@@ -8,11 +8,9 @@ const SHEET_ID =
   process.env.SHEET_ID || "1teLW5gF4PnfTb0dTIIhjibGHBcC11_yJieaoXdnzPTk";
 const SHEET_NAME = "Respostas do Formulário 1";
 
-// Links exibidos no topo do painel.
-const PLANILHA_URL =
-  "https://docs.google.com/spreadsheets/d/1teLW5gF4PnfTb0dTIIhjibGHBcC11_yJieaoXdnzPTk/edit?usp=sharing";
-// Preencha com a URL pública do formulário (Google Forms) para exibir o botão.
-const FORMULARIO_URL = process.env.FORMULARIO_URL || "";
+// Link do formulário (Google Forms) exibido no topo do painel.
+const FORMULARIO_URL =
+  process.env.FORMULARIO_URL || "https://forms.gle/1XRJrt14KaM5Qq6T7";
 
 async function getData(): Promise<{ payload: SheetsPayload | null; erro: string | null }> {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
@@ -62,30 +60,20 @@ export default async function DashboardPage() {
             Programa de Residência Multiprofissional em Gestão em Saúde —
             resultados consolidados das respostas ao formulário.
           </p>
-          <div className="mt-4 flex flex-wrap gap-3">
-            <a
-              href={PLANILHA_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-blue shadow-sm transition-colors hover:bg-blue-50"
-            >
-              <span aria-hidden>📊</span>
-              Planilha de respostas
-              <span aria-hidden className="text-xs">↗</span>
-            </a>
-            {FORMULARIO_URL && (
+          {FORMULARIO_URL && (
+            <div className="mt-4 flex flex-wrap gap-3">
               <a
                 href={FORMULARIO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-md border border-white/40 px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-blue shadow-sm transition-colors hover:bg-blue-50"
               >
                 <span aria-hidden>📝</span>
                 Responder formulário
                 <span aria-hidden className="text-xs">↗</span>
               </a>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </header>
 
