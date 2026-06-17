@@ -808,6 +808,151 @@ export const INDICADORES_AVALIATIVOS: { indicador: string; perguntas: string[] }
         "Quais aspectos pedagógicos do PREMUGS contribuem positivamente para a formação dos residentes e quais poderiam ser melhorados ou fortalecidos?",
       ],
     },
+
+    // ----- Dimensão Relacional -----
+    {
+      indicador: "Índice de Relação Preceptor-Residente",
+      perguntas: [
+        "Os preceptores mantêm uma relação respeitosa, acessível e colaborativa com os residentes?",
+        "Os residentes mantêm uma relação respeitosa, colaborativa e participativa com a preceptoria?",
+      ],
+    },
+    {
+      indicador: "Índice de Relação Tutor-Residente",
+      perguntas: [
+        "Os tutores demonstram disponibilidade, escuta e apoio no acompanhamento pedagógico?",
+        "Os tutores demonstram disponibilidade, escuta e apoio no acompanhamento pedagógico quando necessário?",
+        "Os residentes participam de forma colaborativa do acompanhamento pedagógico realizado pelos tutores?",
+      ],
+    },
+    {
+      indicador: "Índice Relação Multiprofissional",
+      perguntas: [
+        "O ambiente do programa favorece relações respeitosas e colaborativas entre as diferentes categorias profissionais (integração multiprofissional)?",
+        "O ambiente do programa favorece relações respeitosas e colaborativas entre os diferentes participantes (integração multiprofissional)?",
+      ],
+    },
+    {
+      indicador: "Índice de Integração Ensino-Serviço",
+      perguntas: [
+        "O programa promove integração entre a formação dos residentes e os serviços de saúde do SUS?",
+      ],
+    },
+    {
+      indicador: "Índice de Regularidade do Feedback",
+      perguntas: [
+        "A frequência que recebo feedbacks é considerada:",
+        "Recebo feedbacks de forma periódica?",
+        "Os processos de feedback ocorrem de forma periódica?",
+      ],
+    },
+    {
+      indicador: "Índice de Qualidade do Feedback",
+      perguntas: [
+        "Os feedbacks recebidos contribuem para meu desenvolvimento profissional?",
+        "Os feedbacks realizados contribuem para o desenvolvimento dos residentes?",
+      ],
+    },
+    {
+      indicador: "Índice de Acolhimento Institucional",
+      perguntas: [
+        "Sinto-me integrado(a) e apoiado(a) institucionalmente no programa?",
+      ],
+    },
+    {
+      indicador: "Índice Qualitativo Relacional (Pergunta Aberta)",
+      perguntas: [
+        "Quais aspectos das relações interpessoais no PREMUGS poderiam ser fortalecidos ou melhorados?",
+      ],
+    },
+
+    // ----- Dimensão Organizacional -----
+    {
+      indicador: "Índice de Comunicação Institucional",
+      perguntas: [
+        "As informações institucionais são comunicadas de forma clara, compreensível e no tempo oportuno?",
+        "As informações institucionais são comunicadas de forma clara, tempestiva e compreensível?",
+      ],
+    },
+    {
+      indicador: "Índice de Organização do Programa",
+      perguntas: [
+        "O cronograma de atividades do programa é organizado e executado conforme planejado?",
+      ],
+    },
+    {
+      indicador: "Índice de Clareza dos Fluxos",
+      perguntas: [
+        "Os fluxos de comunicação e tomada de decisão no programa são claros, bem definidos e compreendidos pelos participantes?",
+      ],
+    },
+    {
+      indicador: "Índice de Suporte Institucional",
+      perguntas: ["Existe abertura para diálogo e esclarecimento de dúvidas?"],
+    },
+    {
+      indicador: "Índice de Clima Organizacional",
+      perguntas: [
+        "Você se sente seguro e confortável para expressar opiniões contrárias, sugerir melhorias operacionais ou relatar falhas sem receio de julgamentos?",
+      ],
+    },
+    {
+      indicador: "Índice Qualitativo Organizacional (Pergunta Aberta)",
+      perguntas: [
+        "Quais aspectos da cultura organizacional influenciam sua motivação e bem-estar no programa, e o que poderia ser melhorado?",
+        "Quais aspectos da nossa cultura atual ou do nosso ambiente mais contribui para sua motivação e bem-estar institucional? Dê sugestões para melhoria.",
+      ],
+    },
+
+    // ----- Dimensão Governança -----
+    {
+      indicador: "Índice de Transparência Institucional",
+      perguntas: [
+        "As informações sobre decisões, normas e processos do programa são disponibilizadas de forma clara, acessível e transparente pela coordenação?",
+        "O programa assegura a transparência na divulgação de informações institucionais, relatórios e processos decisórios aos diferentes atores?",
+        "Os processos do programa são conduzidos com clareza e transparência?",
+      ],
+    },
+    {
+      indicador: "Índice de Capacidade de Resposta",
+      perguntas: [
+        "As demandas relacionadas à execução das atividades no serviço recebem retorno adequado e em tempo oportuno da coordenação?",
+        "Os residentes, preceptores e tutores estão repassando as demandas do PREMUGS com tempo hábil para os coordenadores?",
+        "As demandas apresentadas recebem retorno adequado da coordenação?",
+        "As demandas pedagógicas e operacionais são respondidas de forma adequada pela coordenação do programa?",
+      ],
+    },
+    {
+      indicador: "Índice de Monitoramento Institucional",
+      perguntas: [
+        "O programa utiliza dados e evidências para monitorar e aprimorar continuamente suas atividades formativas e assistenciais?",
+        "O programa utiliza indicadores e evidências sistematicamente para apoiar decisões de gestão e melhoria contínua?",
+        "O acompanhamento pedagógico do programa é orientado por dados, indicadores e evidências de desempenho?",
+      ],
+    },
+    {
+      indicador: "Índice de Cultura Avaliativa",
+      perguntas: [
+        "O quanto você percebe que a coordenação utiliza efetivamente os resultados das avaliações para promover melhorias reais no PREMUGS?",
+        "Os resultados das avaliações são utilizados de forma sistemática e contínua na tomada de decisão do programa?",
+        "Os resultados das avaliações do programa são efetivamente utilizados para promover melhorias nas práticas de ensino e serviço?",
+      ],
+    },
+    {
+      indicador: "Grau de participação coletiva na gestão",
+      perguntas: [
+        "O quanto você sente que as suas ideias, sugestões e vivências práticas são efetivamente levadas em consideração pela coordenação na hora de tomar decisões importantes para o programa?",
+        "Os preceptores são consultados e participam das decisões importantes relacionadas ao funcionamento do programa?",
+        "Os tutores participam ativamente dos processos de tomada de decisão do programa?",
+        "O programa promove participação efetiva de residentes, preceptores e tutores nas decisões institucionais?",
+      ],
+    },
+    {
+      indicador: "Índice Qualitativo Governança (Pergunta Aberta)",
+      perguntas: [
+        "Como você avalia a governança do PREMUGS em relação à transparência, capacidade de resposta, uso de evidências e participação dos atores? O que poderia ser melhorado?",
+      ],
+    },
   ];
 
 // Normalização mais agressiva para casar perguntas: remove acentos, pontuação
@@ -819,6 +964,43 @@ function normChave(s: string): string {
     .trim();
 }
 
+// Dimensão a que cada indicador pertence. Usado para escopar o agrupamento: um
+// indicador só rotula uma pergunta se ela estiver classificada na MESMA
+// dimensão — evitando que perguntas reaproveitadas entre blocos (ex.: na
+// Sustentabilidade) sejam rotuladas com um indicador de outra dimensão.
+const INDICADOR_DIMENSAO: Record<string, Dimensao> = {
+  // Pedagógica
+  "Índice de Evolução de Aprendizado (teoria-prática)": "Pedagógica",
+  "Índice de Desenvolvimento de Competências em Gestão": "Pedagógica",
+  "Índice de Qualidade Pedagógica": "Pedagógica",
+  "Índice de Estratégias Pedagógicas": "Pedagógica",
+  "Índice de Acompanhamento Pedagógico": "Pedagógica",
+  "Índice Qualitativo Pedagógico (Pergunta Aberta)": "Pedagógica",
+  // Relacional
+  "Índice de Relação Preceptor-Residente": "Relacional",
+  "Índice de Relação Tutor-Residente": "Relacional",
+  "Índice Relação Multiprofissional": "Relacional",
+  "Índice de Integração Ensino-Serviço": "Relacional",
+  "Índice de Regularidade do Feedback": "Relacional",
+  "Índice de Qualidade do Feedback": "Relacional",
+  "Índice de Acolhimento Institucional": "Relacional",
+  "Índice Qualitativo Relacional (Pergunta Aberta)": "Relacional",
+  // Organizacional
+  "Índice de Comunicação Institucional": "Organizacional",
+  "Índice de Organização do Programa": "Organizacional",
+  "Índice de Clareza dos Fluxos": "Organizacional",
+  "Índice de Suporte Institucional": "Organizacional",
+  "Índice de Clima Organizacional": "Organizacional",
+  "Índice Qualitativo Organizacional (Pergunta Aberta)": "Organizacional",
+  // Governança
+  "Índice de Transparência Institucional": "Governança",
+  "Índice de Capacidade de Resposta": "Governança",
+  "Índice de Monitoramento Institucional": "Governança",
+  "Índice de Cultura Avaliativa": "Governança",
+  "Grau de participação coletiva na gestão": "Governança",
+  "Índice Qualitativo Governança (Pergunta Aberta)": "Governança",
+};
+
 const _indicadorPorPergunta = (() => {
   const m = new Map<string, string>();
   for (const { indicador, perguntas } of INDICADORES_AVALIATIVOS) {
@@ -828,8 +1010,16 @@ const _indicadorPorPergunta = (() => {
 })();
 
 // Retorna o nome do indicador de uma pergunta-chave, ou null se não mapeada.
-export function indicadorDaPergunta(pergunta: string): string | null {
-  return _indicadorPorPergunta.get(normChave(pergunta)) ?? null;
+// Se `dimensao` for informada, só retorna o indicador quando ele pertence a
+// essa dimensão.
+export function indicadorDaPergunta(
+  pergunta: string,
+  dimensao?: Dimensao
+): string | null {
+  const ind = _indicadorPorPergunta.get(normChave(pergunta)) ?? null;
+  if (!ind) return null;
+  if (dimensao && INDICADOR_DIMENSAO[ind] !== dimensao) return null;
+  return ind;
 }
 
 // Agrupa as perguntas (IndicadorScore) por indicador, preservando a ordem
@@ -843,13 +1033,16 @@ export interface IndicadorGrupo {
   itens: IndicadorScore[];
 }
 
-export function agruparPorIndicador(itens: IndicadorScore[]): IndicadorGrupo[] {
+export function agruparPorIndicador(
+  itens: IndicadorScore[],
+  dimensao?: Dimensao
+): IndicadorGrupo[] {
   const ordem = INDICADORES_AVALIATIVOS.map((i) => i.indicador);
   const grupos = new Map<string, IndicadorScore[]>();
-  const SEM = " sem";
+  const SEM = "__sem_indicador__";
 
   for (const it of itens) {
-    const chave = indicadorDaPergunta(it.pergunta) ?? SEM;
+    const chave = indicadorDaPergunta(it.pergunta, dimensao) ?? SEM;
     if (!grupos.has(chave)) grupos.set(chave, []);
     grupos.get(chave)!.push(it);
   }

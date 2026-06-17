@@ -59,7 +59,13 @@ function Pergunta({ ind }: { ind: IndicadorScore }) {
   );
 }
 
-function Indicadores({ itens }: { itens: IndicadorScore[] }) {
+function Indicadores({
+  itens,
+  dimensao,
+}: {
+  itens: IndicadorScore[];
+  dimensao: Dimensao;
+}) {
   if (itens.length === 0) {
     return (
       <p className="mt-2 rounded-md bg-gray-50 p-3 text-xs text-gray-400">
@@ -67,7 +73,7 @@ function Indicadores({ itens }: { itens: IndicadorScore[] }) {
       </p>
     );
   }
-  const grupos = agruparPorIndicador(itens);
+  const grupos = agruparPorIndicador(itens, dimensao);
   return (
     <div className="mt-2 space-y-3 rounded-md border border-gray-100 bg-gray-50/60 p-3">
       {grupos.map((g) => (
@@ -165,7 +171,12 @@ export default function DimensionChart({
                 {expandida ? "ocultar indicadores" : "ver indicadores"}
               </p>
             </button>
-            {expandida && <Indicadores itens={indicadores[dimensao] ?? []} />}
+            {expandida && (
+              <Indicadores
+                itens={indicadores[dimensao] ?? []}
+                dimensao={dimensao}
+              />
+            )}
           </div>
         );
       })}
