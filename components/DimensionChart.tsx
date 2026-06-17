@@ -76,38 +76,58 @@ function Indicadores({
   const grupos = agruparPorIndicador(itens, dimensao);
   return (
     <div className="mt-2 space-y-3 rounded-md border border-gray-100 bg-gray-50/60 p-3">
-      {grupos.map((g) => (
-        <div
-          key={g.indicador ?? "sem-indicador"}
-          className="rounded-md border border-gray-100 bg-white p-3"
-        >
-          {/* cabeçalho do índice */}
-          <div className="mb-2 flex items-baseline justify-between gap-3">
-            <p className="min-w-0 text-xs font-bold text-brand-blue">
-              {g.indicador ?? "Outras perguntas"}
-              <span className="ml-1 font-normal text-gray-400">
-                · {g.itens.length}{" "}
-                {g.itens.length === 1 ? "pergunta" : "perguntas"}
-              </span>
+      {grupos.map((g) =>
+        g.indicador === null ? (
+          // Perguntas que não pertencem a nenhum indicador da matriz — exibidas
+          // de forma neutra (sem nome/média de índice).
+          <div
+            key="sem-indicador"
+            className="rounded-md border border-dashed border-gray-200 bg-transparent p-3"
+          >
+            <p className="mb-2 text-[11px] font-medium uppercase tracking-wide text-gray-400">
+              Perguntas sem indicador vinculado
             </p>
-            {g.media !== null && (
-              <span
-                className="shrink-0 text-xs font-bold tabular-nums"
-                style={{ color: corPorScore(g.media) }}
-              >
-                {g.media.toFixed(1)}
-                <span className="font-normal text-gray-400">/4.0 · {g.n}</span>
-              </span>
-            )}
+            <ul className="space-y-3">
+              {g.itens.map((ind) => (
+                <Pergunta key={ind.pergunta} ind={ind} />
+              ))}
+            </ul>
           </div>
-          {/* perguntas do índice */}
-          <ul className="space-y-3 border-l-2 border-gray-100 pl-3">
-            {g.itens.map((ind) => (
-              <Pergunta key={ind.pergunta} ind={ind} />
-            ))}
-          </ul>
-        </div>
-      ))}
+        ) : (
+          <div
+            key={g.indicador}
+            className="rounded-md border border-gray-100 bg-white p-3"
+          >
+            {/* cabeçalho do índice */}
+            <div className="mb-2 flex items-baseline justify-between gap-3">
+              <p className="min-w-0 text-xs font-bold text-brand-blue">
+                {g.indicador}
+                <span className="ml-1 font-normal text-gray-400">
+                  · {g.itens.length}{" "}
+                  {g.itens.length === 1 ? "pergunta" : "perguntas"}
+                </span>
+              </p>
+              {g.media !== null && (
+                <span
+                  className="shrink-0 text-xs font-bold tabular-nums"
+                  style={{ color: corPorScore(g.media) }}
+                >
+                  {g.media.toFixed(1)}
+                  <span className="font-normal text-gray-400">
+                    /4.0 · {g.n}
+                  </span>
+                </span>
+              )}
+            </div>
+            {/* perguntas do índice */}
+            <ul className="space-y-3 border-l-2 border-gray-100 pl-3">
+              {g.itens.map((ind) => (
+                <Pergunta key={ind.pergunta} ind={ind} />
+              ))}
+            </ul>
+          </div>
+        )
+      )}
     </div>
   );
 }
