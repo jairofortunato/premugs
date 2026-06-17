@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {
   corPorScore,
-  indicadorDaPergunta,
+  agruparPorIndicador,
   type Dimensao,
   type IndicadorScore,
 } from "@/lib/parseSheets";
@@ -39,6 +39,26 @@ function Barra({ score, fina }: { score: number; fina?: boolean }) {
   );
 }
 
+function Pergunta({ ind }: { ind: IndicadorScore }) {
+  return (
+    <li>
+      <div className="mb-1 flex items-baseline justify-between gap-3">
+        <p className="min-w-0 text-xs leading-snug text-gray-600">
+          {ind.pergunta}
+        </p>
+        <span
+          className="shrink-0 text-xs font-bold tabular-nums"
+          style={{ color: corPorScore(ind.media) }}
+        >
+          {ind.media.toFixed(1)}
+          <span className="font-normal text-gray-400">/4.0 · {ind.n}</span>
+        </span>
+      </div>
+      <Barra score={ind.media} fina />
+    </li>
+  );
+}
+
 function Indicadores({ itens }: { itens: IndicadorScore[] }) {
   if (itens.length === 0) {
     return (
@@ -47,36 +67,42 @@ function Indicadores({ itens }: { itens: IndicadorScore[] }) {
       </p>
     );
   }
+  const grupos = agruparPorIndicador(itens);
   return (
-    <ul className="mt-2 space-y-3 rounded-md border border-gray-100 bg-gray-50/60 p-3">
-      {itens.map((ind) => {
-        const indicador = indicadorDaPergunta(ind.pergunta);
-        return (
-        <li key={ind.pergunta}>
-          {indicador && (
-            <span className="mb-1 inline-block rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-blue">
-              {indicador}
-            </span>
-          )}
-          <div className="mb-1 flex items-baseline justify-between gap-3">
-            <p className="min-w-0 text-xs leading-snug text-gray-600">
-              {ind.pergunta}
-            </p>
-            <span
-              className="shrink-0 text-xs font-bold tabular-nums"
-              style={{ color: corPorScore(ind.media) }}
-            >
-              {ind.media.toFixed(1)}
-              <span className="font-normal text-gray-400">
-                /4.0 · {ind.n}
+    <div className="mt-2 space-y-3 rounded-md border border-gray-100 bg-gray-50/60 p-3">
+      {grupos.map((g) => (
+        <div
+          key={g.indicador ?? "sem-indicador"}
+          className="rounded-md border border-gray-100 bg-white p-3"
+        >
+          {/* cabeçalho do índice */}
+          <div className="mb-2 flex items-baseline justify-between gap-3">
+            <p className="min-w-0 text-xs font-bold text-brand-blue">
+              {g.indicador ?? "Outras perguntas"}
+              <span className="ml-1 font-normal text-gray-400">
+                · {g.itens.length}{" "}
+                {g.itens.length === 1 ? "pergunta" : "perguntas"}
               </span>
-            </span>
+            </p>
+            {g.media !== null && (
+              <span
+                className="shrink-0 text-xs font-bold tabular-nums"
+                style={{ color: corPorScore(g.media) }}
+              >
+                {g.media.toFixed(1)}
+                <span className="font-normal text-gray-400">/4.0 · {g.n}</span>
+              </span>
+            )}
           </div>
-          <Barra score={ind.media} fina />
-        </li>
-        );
-      })}
-    </ul>
+          {/* perguntas do índice */}
+          <ul className="space-y-3 border-l-2 border-gray-100 pl-3">
+            {g.itens.map((ind) => (
+              <Pergunta key={ind.pergunta} ind={ind} />
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
   );
 }
 

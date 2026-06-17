@@ -831,3 +831,50 @@ const _indicadorPorPergunta = (() => {
 export function indicadorDaPergunta(pergunta: string): string | null {
   return _indicadorPorPergunta.get(normChave(pergunta)) ?? null;
 }
+
+// Agrupa as perguntas (IndicadorScore) por indicador, preservando a ordem
+// canônica de INDICADORES_AVALIATIVOS. Perguntas sem indicador mapeado caem em
+// um grupo final com indicador = null. A média do grupo é integrada (ponderada
+// pelo nº de respostas de cada pergunta).
+export interface IndicadorGrupo {
+  indicador: string | null;
+  media: number | null;
+  n: number;
+  itens: IndicadorScore[];
+}
+
+export function agruparPorIndicador(itens: IndicadorScore[]): IndicadorGrupo[] {
+  const ordem = INDICADORES_AVALIATIVOS.map((i) => i.indicador);
+  const grupos = new Map<string, IndicadorScore[]>();
+  const SEM = " sem";
+
+  for (const it of itens) {
+    const chave = indicadorDaPergunta(it.pergunta) ?? SEM;
+    if (!grupos.has(chave)) grupos.set(chave, []);
+    grupos.get(chave)!.push(it);
+  }
+
+  const chaves = Array.from(grupos.keys()).sort((a, b) => {
+    if (a === SEM) return 1;
+    if (b === SEM) return -1;
+    const ia = ordem.indexOf(a);
+    const ib = ordem.indexOf(b);
+    return (ia < 0 ? 999 : ia) - (ib < 0 ? 999 : ib);
+  });
+
+  return chaves.map((k) => {
+    const arr = grupos.get(k)!;
+    let soma = 0;
+    let n = 0;
+    for (const it of arr) {
+      soma += it.media * it.n;
+      n += it.n;
+    }
+    return {
+      indicador: k === SEM ? null : k,
+      media: n > 0 ? soma / n : null,
+      n,
+      itens: arr,
+    };
+  });
+}
