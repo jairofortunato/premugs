@@ -759,18 +759,53 @@ export function corPorScore(score: number): string {
 // espaços extras, então pequenas diferenças de formatação não quebram o mapa.
 export const INDICADORES_AVALIATIVOS: { indicador: string; perguntas: string[] }[] =
   [
+    // ----- Dimensão Pedagógica -----
     {
       indicador: "Índice de Evolução de Aprendizado (teoria-prática)",
       perguntas: [
-        // Residentes
         "Os conhecimentos adquiridos nas atividades teóricas aumentaram minha capacidade de atuar e resolver situações encontradas na prática do serviço?",
-        "As aulas e os conteúdos teóricos ajudam realmente a resolver os problemas práticos do dia a dia no serviço?",
-        // Preceptores
         "Os residentes conseguem aplicar, na prática, os conhecimentos desenvolvidos nas atividades teóricas do programa?",
-        // Tutores
         "As atividades pedagógicas favorecem a articulação entre teoria e prática na formação dos residentes?",
-        // Coordenadores
         "O programa promove integração adequada entre conteúdos teóricos e práticas desenvolvidas nos serviços de saúde?",
+      ],
+    },
+    {
+      indicador: "Índice de Desenvolvimento de Competências em Gestão",
+      perguntas: [
+        "O programa contribui para o desenvolvimento de competências em gestão em saúde?",
+        "Os residentes demonstram evolução em competências relacionadas à gestão em saúde?",
+        "As atividades pedagógicas desenvolvidas favorecem competências de gestão em saúde?",
+        "O programa desenvolve competências compatíveis com as demandas de gestão no SUS?",
+      ],
+    },
+    {
+      indicador: "Índice de Qualidade Pedagógica",
+      perguntas: [
+        "As atividades formativas são planejadas e conduzidas de forma clara, organizada e adequada para promover a aprendizagem?",
+        "As atividades formativas contribuem para a atuação prática dos residentes?",
+        "As estratégias pedagógicas utilizadas favorecem o desenvolvimento profissional dos residentes?",
+        "O plano pedagógico está alinhado com as demandas de gestão no SUS?",
+      ],
+    },
+    {
+      indicador: "Índice de Estratégias Pedagógicas",
+      perguntas: [
+        "O trabalho e os projetos desenvolvidos pelos residentes trouxeram melhorias para a rotina e os processos da prática profissional?",
+        "As atividades e projetos desenvolvidos pelos residentes contribuem para melhorias no serviço?",
+        "As estratégias pedagógicas estimulam reflexão crítica e resolução de problemas na prática profissional do residente?",
+        "O programa utiliza estratégias pedagógicas alinhadas às necessidades dos serviços e da formação multiprofissional?",
+      ],
+    },
+    {
+      indicador: "Índice de Acompanhamento Pedagógico",
+      perguntas: [
+        "O acompanhamento pedagógico no programa é adequado para o desenvolvimento dos residentes?",
+      ],
+    },
+    {
+      indicador: "Índice Qualitativo Pedagógico (Pergunta Aberta)",
+      perguntas: [
+        "Quais aspectos pedagógicos do PREMUGS contribuem positivamente para a formação dos residentes e quais poderiam ser melhorados ou fortalecidos?",
       ],
     },
   ];
