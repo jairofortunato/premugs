@@ -953,6 +953,60 @@ export const INDICADORES_AVALIATIVOS: { indicador: string; perguntas: string[] }
         "Como você avalia a governança do PREMUGS em relação à transparência, capacidade de resposta, uso de evidências e participação dos atores? O que poderia ser melhorado?",
       ],
     },
+
+    // ----- Dimensão Sustentabilidade -----
+    {
+      indicador: "Índice de Impacto Formativo",
+      perguntas: [
+        "O PREMUGS contribui positivamente para sua formação profissional em gestão no SUS?",
+        "As atividades do PREMUGS promovem o desenvolvimento consistente de competências em gestão em saúde?",
+        "O PREMUGS contribui para o desenvolvimento de competências em gestão dos residentes sob sua supervisão?",
+        "As atividades do PREMUGS promovem o desenvolvimento consistente de competências em gestão e organização do trabalho em saúde?",
+        "O PREMUGS atinge seus objetivos formativos em gestão no SUS?",
+      ],
+    },
+    {
+      indicador: "Índice de Impacto nos Serviços",
+      perguntas: [
+        "Você conseguiu aplicar, na sua prática de gestão durante a residência, os conhecimentos adquiridos nas atividades formativas do PREMUGS?",
+        "Você conseguiu aplicar, na sua prática clínica ou de gestão durante a residência, os conhecimentos adquiridos nas atividades formativas do PREMUGS?",
+        "A atuação dos residentes contribui para melhorias nos processos de trabalho do serviço?",
+        "Os conhecimentos aplicados pelos residentes geram melhorias nos processos de trabalho dos serviços de saúde?",
+      ],
+    },
+    {
+      indicador: "Índice de Potencial de Consolidação",
+      perguntas: [
+        "As iniciativas implantadas pelo PREMUGS na sua unidade continuam sendo realizadas de forma autônoma pela equipe, sem depender da presença contínua do programa?",
+        "As práticas introduzidas pelo programa têm potencial de continuidade independente da presença do PREMUGS?",
+        "O programa gera mudanças sustentáveis nos serviços que permanecem após o ciclo formativo?",
+        "As melhorias implementadas pelos residentes são incorporadas de forma permanente à rotina do serviço?",
+      ],
+    },
+    {
+      indicador: "Índice de Aprendizagem Institucional",
+      perguntas: [
+        "Durante a sua residência, você percebeu mudanças na integração entre ensino, serviço e comunidade promovidas pelo PREMUGS?",
+        "O programa promove aprendizagem institucional e melhoria contínua nos processos de formação e trabalho em saúde?",
+        "O PREMUGS promove mudanças institucionais duradouras na integração entre ensino, serviço e gestão?",
+        "O PREMUGS promove mudanças na organização do trabalho e na articulação ensino-serviço?",
+      ],
+    },
+    {
+      indicador: "Relação custo-efetividade operacional do PREMUGS",
+      perguntas: [
+        "Os recursos investidos no PREMUGS são proporcionais aos resultados formativos e operacionais alcançados pelo programa?",
+        "Os recursos humanos, financeiros e estruturais investidos na operação do PREMUGS são proporcionais aos resultados alcançados nos serviços de saúde e na formação dos residentes?",
+        "Os recursos humanos, financeiros e estruturais investidos no PREMUGS são proporcionais aos resultados formativos e operacionais alcançados pelo programa? (Verificar se fica só Coordenadores)",
+        "Os recursos humanos, financeiros e estruturais investidos no PREMUGS são proporcionais aos resultados formativos e operacionais alcançados pelo programa? (Verificar se só coordenadores)",
+      ],
+    },
+    {
+      indicador: "Índice Qualitativo Sustentabilidade (Pergunta Aberta)",
+      perguntas: [
+        "Na sua visão, o que seria necessário para aumentar a sustentabilidade do PREMUGS em termos de recursos, apoio institucional, governança, parcerias ou mudanças organizacionais?",
+      ],
+    },
   ];
 
 // Normalização mais agressiva para casar perguntas: remove acentos, pontuação
@@ -999,6 +1053,13 @@ const INDICADOR_DIMENSAO: Record<string, Dimensao> = {
   "Índice de Cultura Avaliativa": "Governança",
   "Grau de participação coletiva na gestão": "Governança",
   "Índice Qualitativo Governança (Pergunta Aberta)": "Governança",
+  // Sustentabilidade
+  "Índice de Impacto Formativo": "Sustentabilidade",
+  "Índice de Impacto nos Serviços": "Sustentabilidade",
+  "Índice de Potencial de Consolidação": "Sustentabilidade",
+  "Índice de Aprendizagem Institucional": "Sustentabilidade",
+  "Relação custo-efetividade operacional do PREMUGS": "Sustentabilidade",
+  "Índice Qualitativo Sustentabilidade (Pergunta Aberta)": "Sustentabilidade",
 };
 
 const _indicadorPorPergunta = (() => {
