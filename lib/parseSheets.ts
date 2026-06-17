@@ -428,11 +428,11 @@ export function buildRespostas(payload: SheetsPayload): Resposta[] {
       if (isNumeric(valor)) {
         const likert = toLikert(valor);
         if (likert !== null) {
-          quantitativas.push({
-            pergunta: h,
-            valor: likert,
-            dimensao: dimByHeader.get(h) ?? null,
-          });
+          // A dimensão da matriz (via indicador) tem prioridade sobre o chute
+          // por palavra-chave — assim a pergunta cai na dimensão correta.
+          const dimensao =
+            dimensaoDaPerguntaPorIndicador(h) ?? dimByHeader.get(h) ?? null;
+          quantitativas.push({ pergunta: h, valor: likert, dimensao });
         }
       } else if (!isQuantitativaHeader(h)) {
         qualitativas.push({ pergunta: h, valor: valor.trim() });
@@ -1081,6 +1081,16 @@ export function indicadorDaPergunta(
   if (!ind) return null;
   if (dimensao && INDICADOR_DIMENSAO[ind] !== dimensao) return null;
   return ind;
+}
+
+// Dimensão "oficial" de uma pergunta segundo a matriz de indicadores (a partir
+// do indicador a que ela pertence). Tem prioridade sobre a classificação por
+// palavra-chave, garantindo que a pergunta apareça na dimensão correta.
+export function dimensaoDaPerguntaPorIndicador(
+  pergunta: string
+): Dimensao | null {
+  const ind = _indicadorPorPergunta.get(normChave(pergunta));
+  return ind ? INDICADOR_DIMENSAO[ind] ?? null : null;
 }
 
 // Agrupa as perguntas (IndicadorScore) por indicador, preservando a ordem
