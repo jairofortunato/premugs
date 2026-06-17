@@ -31,6 +31,7 @@ import {
 } from "@/lib/parseSheets";
 import KPICard from "@/components/KPICard";
 import DimensionChart from "@/components/DimensionChart";
+import GaugeChart from "@/components/GaugeChart";
 import QualitativeSection from "@/components/QualitativeSection";
 import ResponsesTable from "@/components/ResponsesTable";
 
@@ -107,6 +108,13 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
     { name: "Sim", value: geral.recomenda.sim },
     { name: "Não", value: geral.recomenda.nao },
   ].filter((d) => d.value > 0);
+
+  // Índice geral: média de todas as notas quantitativas (escala 1–4).
+  const totalNotas = distNotas.reduce((a, d) => a + d.quantidade, 0);
+  const mediaGeral =
+    totalNotas > 0
+      ? distNotas.reduce((a, d) => a + d.nota * d.quantidade, 0) / totalNotas
+      : null;
 
   return (
     <div className="space-y-8">
@@ -221,6 +229,148 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
           accent="gray"
         />
       </div>
+
+      {/* ---------- Avaliação Geral ---------- */}
+      <section>
+        <SectionTitle sub="Percepção global do programa e da ferramenta de avaliação">
+          Avaliação Geral
+        </SectionTitle>
+
+        {/* Velocímetro do índice geral */}
+        <div className="mb-4 rounded-lg border border-gray-100 bg-white p-5 shadow-card">
+          <div className="grid grid-cols-1 items-center gap-4 sm:grid-cols-2">
+            <div>
+              <p className="text-base font-bold text-gray-900">
+                Índice Geral PREMUGS
+              </p>
+              <p className="mt-1 text-xs text-gray-400">
+                Média de todas as perguntas quantitativas (escala 1–4) ·{" "}
+                {totalNotas} notas
+              </p>
+              <div className="mt-3 flex flex-wrap gap-4 text-[11px] text-gray-500">
+                <span className="flex items-center gap-1">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#dc2626]" /> &lt; 2
+                  crítico
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#d97706]" /> 2–3
+                  atenção
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="h-2.5 w-2.5 rounded-full bg-[#057a55]" /> &gt; 3
+                  bom
+                </span>
+              </div>
+            </div>
+            <GaugeChart value={mediaGeral} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          {/* Distribuição "de forma geral" */}
+          <div className="rounded-lg border border-gray-100 bg-white p-5 shadow-card">
+            <p className="text-sm font-semibold text-gray-800">
+              Como avalia o PREMUGS?
+            </p>
+            <p className="mt-0.5 text-xs text-gray-400">
+              Média{" "}
+              <span className="font-bold text-brand-blue">
+                {geral.geralMedia !== null ? geral.geralMedia.toFixed(1) : "—"}
+              </span>
+              /4.0 · {geral.geralN} respostas
+            </p>
+            <div className="mt-3 h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={geral.geralDistribuicao}>
+                  <XAxis
+                    dataKey="nota"
+                    tickFormatter={(v) => `Nota ${v}`}
+                    fontSize={11}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis allowDecimals={false} fontSize={11} width={24} tickLine={false} axisLine={false} />
+                  <Tooltip
+                    cursor={{ fill: "#f3f4f6" }}
+                    formatter={(v) => [`${v} respostas`, "Quantidade"]}
+                    labelFormatter={(l) => `Nota ${l}`}
+                  />
+                  <Bar dataKey="quantidade" radius={[4, 4, 0, 0]}>
+                    {geral.geralDistribuicao.map((d) => (
+                      <Cell
+                        key={d.nota}
+                        fill={d.nota >= 3 ? "#057a55" : d.nota === 2 ? "#d97706" : "#dc2626"}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* Donut recomendação */}
+          <div className="rounded-lg border border-gray-100 bg-white p-5 shadow-card">
+            <p className="text-sm font-semibold text-gray-800">
+              Recomendaria o PREMUGS?
+            </p>
+            <p className="mt-0.5 text-xs text-gray-400">
+              {geral.recomenda.total} respostas
+            </p>
+            <div className="mt-3 h-64">
+              {recomendaData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={recomendaData}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={45}
+                      outerRadius={70}
+                      paddingAngle={2}
+                    >
+                      <Cell fill="#057a55" />
+                      <Cell fill="#dc2626" />
+                    </Pie>
+                    <Tooltip formatter={(v, n) => [`${v}`, n as string]} />
+                    <Legend
+                      formatter={(value) => {
+                        const item = recomendaData.find((d) => d.name === value);
+                        const p =
+                          geral.recomenda.total > 0 && item
+                            ? Math.round((item.value / geral.recomenda.total) * 100)
+                            : 0;
+                        return `${value} · ${p}%`;
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex h-full items-center justify-center text-sm text-gray-300">
+                  Sem dados
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Utilidade da ferramenta */}
+          <div className="flex flex-col rounded-lg border border-gray-100 bg-white p-5 shadow-card">
+            <p className="text-sm font-semibold text-gray-800">
+              Utilidade do PREMUGS Avalia
+            </p>
+            <p className="mt-0.5 text-xs text-gray-400">
+              {geral.ferramentaN} respostas
+            </p>
+            <div className="flex flex-1 flex-col items-center justify-center">
+              <span className="text-5xl font-bold text-brand-green">
+                {geral.ferramentaMedia !== null
+                  ? geral.ferramentaMedia.toFixed(1)
+                  : "—"}
+              </span>
+              <span className="text-sm text-gray-400">de 4.0</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* ---------- Dimensões ---------- */}
       <section className="rounded-lg border border-gray-100 bg-white p-5 shadow-card sm:p-6">
@@ -353,116 +503,6 @@ export default function DashboardClient({ payload }: { payload: SheetsPayload })
         </div>
       </section>
 
-      {/* ---------- Avaliação Geral ---------- */}
-      <section>
-        <SectionTitle sub="Percepção global do programa e da ferramenta de avaliação">
-          Avaliação Geral
-        </SectionTitle>
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-          {/* Distribuição "de forma geral" */}
-          <div className="rounded-lg border border-gray-100 bg-white p-5 shadow-card">
-            <p className="text-sm font-semibold text-gray-800">
-              Como avalia o PREMUGS?
-            </p>
-            <p className="mt-0.5 text-xs text-gray-400">
-              Média{" "}
-              <span className="font-bold text-brand-blue">
-                {geral.geralMedia !== null ? geral.geralMedia.toFixed(1) : "—"}
-              </span>
-              /4.0 · {geral.geralN} respostas
-            </p>
-            <div className="mt-3 h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={geral.geralDistribuicao}>
-                  <XAxis
-                    dataKey="nota"
-                    tickFormatter={(v) => `Nota ${v}`}
-                    fontSize={11}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <YAxis allowDecimals={false} fontSize={11} width={24} tickLine={false} axisLine={false} />
-                  <Tooltip
-                    cursor={{ fill: "#f3f4f6" }}
-                    formatter={(v) => [`${v} respostas`, "Quantidade"]}
-                    labelFormatter={(l) => `Nota ${l}`}
-                  />
-                  <Bar dataKey="quantidade" radius={[4, 4, 0, 0]}>
-                    {geral.geralDistribuicao.map((d) => (
-                      <Cell
-                        key={d.nota}
-                        fill={d.nota >= 3 ? "#057a55" : d.nota === 2 ? "#d97706" : "#dc2626"}
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* Donut recomendação */}
-          <div className="rounded-lg border border-gray-100 bg-white p-5 shadow-card">
-            <p className="text-sm font-semibold text-gray-800">
-              Recomendaria o PREMUGS?
-            </p>
-            <p className="mt-0.5 text-xs text-gray-400">
-              {geral.recomenda.total} respostas
-            </p>
-            <div className="mt-3 h-64">
-              {recomendaData.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={recomendaData}
-                      dataKey="value"
-                      nameKey="name"
-                      innerRadius={45}
-                      outerRadius={70}
-                      paddingAngle={2}
-                    >
-                      <Cell fill="#057a55" />
-                      <Cell fill="#dc2626" />
-                    </Pie>
-                    <Tooltip formatter={(v, n) => [`${v}`, n as string]} />
-                    <Legend
-                      formatter={(value) => {
-                        const item = recomendaData.find((d) => d.name === value);
-                        const p =
-                          geral.recomenda.total > 0 && item
-                            ? Math.round((item.value / geral.recomenda.total) * 100)
-                            : 0;
-                        return `${value} · ${p}%`;
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex h-full items-center justify-center text-sm text-gray-300">
-                  Sem dados
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Utilidade da ferramenta */}
-          <div className="flex flex-col rounded-lg border border-gray-100 bg-white p-5 shadow-card">
-            <p className="text-sm font-semibold text-gray-800">
-              Utilidade do PREMUGS Avalia
-            </p>
-            <p className="mt-0.5 text-xs text-gray-400">
-              {geral.ferramentaN} respostas
-            </p>
-            <div className="flex flex-1 flex-col items-center justify-center">
-              <span className="text-5xl font-bold text-brand-green">
-                {geral.ferramentaMedia !== null
-                  ? geral.ferramentaMedia.toFixed(1)
-                  : "—"}
-              </span>
-              <span className="text-sm text-gray-400">de 4.0</span>
-            </div>
-          </div>
-        </div>
-      </section>
         </>
       )}
 
