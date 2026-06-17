@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 360" role="img" aria-label="PREMUGS Avalia — Secretaria Municipal de Saúde · Florianópolis">
+  <defs>
+    <style>
+      .navy { fill: #16365f; }
+      .navyStroke { stroke: #16365f; }
+    </style>
+  </defs>
+
+  <!-- ===== Magnifying glass ===== -->
+  <!-- handle (drawn first, ring overlaps it) -->
+  <line x1="112" y1="252" x2="40" y2="332" stroke="#16365f" stroke-width="40" stroke-linecap="round" />
+
+  <!-- white lens background -->
+  <circle cx="195" cy="170" r="120" fill="#ffffff" />
+
+  <!-- bars inside the lens -->
+  <rect x="128" y="170" width="32" height="65" rx="3" fill="#2b8cbe" />
+  <rect x="170" y="120" width="32" height="115" rx="3" fill="#f5a623" />
+  <rect x="212" y="148" width="32" height="87" rx="3" fill="#4caf50" />
+
+  <!-- green check mark over the bars -->
+  <polyline points="150,196 188,234 268,138" fill="none" stroke="#2e9e5b" stroke-width="24" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- navy ring -->
+  <circle cx="195" cy="170" r="120" fill="none" stroke="#16365f" stroke-width="17" />
+  <!-- orange arc over the top of the ring -->
+  <path d="M 82 211 A 120 120 0 1 1 308 211" fill="none" stroke="#f5a623" stroke-width="17" stroke-linecap="round" />
+
+  <!-- ===== Wordmark ===== -->
+  <text x="395" y="198" font-family="Arial, Helvetica, sans-serif" font-size="112" font-weight="800" letter-spacing="-1" class="navy">PREMUGS</text>
+  <text x="930" y="210" font-family="'Brush Script MT', 'Segoe Script', cursive" font-size="138" font-style="italic" font-weight="700" fill="#2e9e5b">Avalia</text>
+
+  <!-- green swoosh underline -->
+  <path d="M 398 240 C 700 218, 1050 218, 1290 238" fill="none" stroke="#2e9e5b" stroke-width="9" stroke-linecap="round" />
+
+  <!-- subtitle -->
+  <text x="402" y="300" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="600" letter-spacing="3" fill="#aab6c2">SECRETARIA MUNICIPAL DE SAÚDE • FLORIANÓPOLIS</text>
+</svg>

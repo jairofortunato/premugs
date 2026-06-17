@@ -38,7 +38,13 @@ function Barra({ score, fina }: { score: number; fina?: boolean }) {
   );
 }
 
-function Indicadores({ itens }: { itens: IndicadorScore[] }) {
+function Indicadores({
+  itens,
+  dimensao,
+}: {
+  itens: IndicadorScore[];
+  dimensao: Dimensao;
+}) {
   if (itens.length === 0) {
     return (
       <p className="mt-2 rounded-md bg-gray-50 p-3 text-xs text-gray-400">
@@ -50,6 +56,9 @@ function Indicadores({ itens }: { itens: IndicadorScore[] }) {
     <ul className="mt-2 space-y-3 rounded-md border border-gray-100 bg-gray-50/60 p-3">
       {itens.map((ind) => (
         <li key={ind.pergunta}>
+          <span className="mb-1 inline-block rounded bg-brand-blue/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-blue">
+            {dimensao}
+          </span>
           <div className="mb-1 flex items-baseline justify-between gap-3">
             <p className="min-w-0 text-xs leading-snug text-gray-600">
               {ind.pergunta}
@@ -130,7 +139,12 @@ export default function DimensionChart({
                 {expandida ? "ocultar indicadores" : "ver indicadores"}
               </p>
             </button>
-            {expandida && <Indicadores itens={indicadores[dimensao] ?? []} />}
+            {expandida && (
+              <Indicadores
+                itens={indicadores[dimensao] ?? []}
+                dimensao={dimensao}
+              />
+            )}
           </div>
         );
       })}

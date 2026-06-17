@@ -1,3 +1,4 @@
+import Image from "next/image";
 import DashboardClient from "./DashboardClient";
 import { csvToPayload, type SheetsPayload } from "@/lib/parseSheets";
 
@@ -34,6 +35,19 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-gray-100">
+      <div className="border-b border-gray-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+          <Image
+            src="/logo-premugs.svg"
+            alt="PREMUGS Avalia — Secretaria Municipal de Saúde de Florianópolis"
+            width={1400}
+            height={360}
+            priority
+            className="h-16 w-auto sm:h-20"
+          />
+        </div>
+      </div>
+
       <header className="bg-brand-blue text-white">
         <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <p className="text-xs font-medium uppercase tracking-wider text-blue-200">
