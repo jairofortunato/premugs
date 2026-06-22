@@ -12,6 +12,11 @@ const SHEET_NAME = "Respostas do Formulário 1";
 const FORMULARIO_URL =
   process.env.FORMULARIO_URL || "https://forms.gle/1XRJrt14KaM5Qq6T7";
 
+// Link da planilha (Google Sheets) com as respostas, exibido no cabeçalho.
+const PLANILHA_URL =
+  process.env.PLANILHA_URL ||
+  `https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit?usp=sharing`;
+
 async function getData(): Promise<{ payload: SheetsPayload | null; erro: string | null }> {
   const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(
     SHEET_NAME
@@ -69,18 +74,32 @@ export default async function DashboardPage() {
               </p>
             </div>
 
-            {FORMULARIO_URL && (
-              <a
-                href={FORMULARIO_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex shrink-0 items-center gap-2 self-start rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-brand-blue shadow-md transition-all hover:-translate-y-0.5 hover:bg-blue-50 hover:shadow-lg sm:self-auto"
-              >
-                <span aria-hidden>📝</span>
-                Responder formulário
-                <span aria-hidden className="text-xs">↗</span>
-              </a>
-            )}
+            <div className="flex shrink-0 flex-col gap-3 self-start sm:flex-row sm:items-center sm:self-auto">
+              {FORMULARIO_URL && (
+                <a
+                  href={FORMULARIO_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-brand-blue shadow-md transition-all hover:-translate-y-0.5 hover:bg-blue-50 hover:shadow-lg"
+                >
+                  <span aria-hidden>📝</span>
+                  Responder formulário
+                  <span aria-hidden className="text-xs">↗</span>
+                </a>
+              )}
+              {PLANILHA_URL && (
+                <a
+                  href={PLANILHA_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-white/15 px-4 py-2.5 text-sm font-semibold text-white ring-1 ring-inset ring-white/30 backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-white/25"
+                >
+                  <span aria-hidden>📊</span>
+                  Ver planilha
+                  <span aria-hidden className="text-xs">↗</span>
+                </a>
+              )}
+            </div>
           </div>
         </div>
       </header>
