@@ -39,41 +39,49 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-gray-100">
-      <header className="bg-brand-blue text-white">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <p className="text-xs font-medium uppercase tracking-wider text-blue-200">
-            Avaliação Institucional
-          </p>
-          <h1 className="mt-2">
-            <span className="inline-block rounded-lg bg-white px-4 py-3 shadow-sm">
-              <Image
-                src="/logo-premugs.svg"
-                alt="PREMUGS Avalia — Secretaria Municipal de Saúde de Florianópolis"
-                width={1400}
-                height={360}
-                priority
-                className="h-14 w-auto sm:h-16"
-              />
-            </span>
-          </h1>
-          <p className="mt-3 max-w-3xl text-sm text-blue-100">
-            Programa de Residência Multiprofissional em Gestão em Saúde —
-            resultados consolidados das respostas ao formulário.
-          </p>
-          {FORMULARIO_URL && (
-            <div className="mt-4 flex flex-wrap gap-3">
+      <header className="relative overflow-hidden bg-gradient-to-br from-brand-blue via-brand-blue to-[#0f3aa8] text-white">
+        {/* brilho decorativo sutil */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/10 blur-3xl"
+        />
+        <div className="relative mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-blue-50 ring-1 ring-inset ring-white/20">
+                Avaliação Institucional
+              </span>
+              <h1 className="mt-4">
+                <span className="inline-flex rounded-xl bg-white px-5 py-3 shadow-lg ring-1 ring-black/5">
+                  <Image
+                    src="/logo-premugs.svg"
+                    alt="PREMUGS Avalia — Secretaria Municipal de Saúde de Florianópolis"
+                    width={1400}
+                    height={360}
+                    priority
+                    className="h-14 w-auto sm:h-16"
+                  />
+                </span>
+              </h1>
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-blue-100">
+                Programa de Residência Multiprofissional em Gestão em Saúde —
+                resultados consolidados das respostas ao formulário.
+              </p>
+            </div>
+
+            {FORMULARIO_URL && (
               <a
                 href={FORMULARIO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-md bg-white px-3 py-2 text-sm font-semibold text-brand-blue shadow-sm transition-colors hover:bg-blue-50"
+                className="inline-flex shrink-0 items-center gap-2 self-start rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-brand-blue shadow-md transition-all hover:-translate-y-0.5 hover:bg-blue-50 hover:shadow-lg sm:self-auto"
               >
                 <span aria-hidden>📝</span>
                 Responder formulário
                 <span aria-hidden className="text-xs">↗</span>
               </a>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </header>
 

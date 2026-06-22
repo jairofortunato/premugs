@@ -46,14 +46,13 @@ export default function GaugeChart({
 
   return (
     <div className="flex flex-col items-center">
-      <svg viewBox="0 0 200 116" className="w-full max-w-[280px]">
-        {/* segmentos coloridos */}
+      <svg viewBox="0 0 200 108" className="w-full max-w-[280px]">
+        {/* segmentos coloridos — bordas retas (butt) para não se sobreporem */}
         <path
           d={arcPath(cx, cy, r, ang(min), ang(2))}
           stroke="#dc2626"
           strokeWidth="15"
           fill="none"
-          strokeLinecap="round"
         />
         <path
           d={arcPath(cx, cy, r, ang(2), ang(3))}
@@ -66,7 +65,6 @@ export default function GaugeChart({
           stroke="#057a55"
           strokeWidth="15"
           fill="none"
-          strokeLinecap="round"
         />
 
         {/* marcas 2 e 3 */}
@@ -102,13 +100,6 @@ export default function GaugeChart({
           </>
         )}
 
-        {/* limites da escala */}
-        <text x="16" y="112" fontSize="10" fill="#9ca3af">
-          {min}
-        </text>
-        <text x="178" y="112" fontSize="10" fill="#9ca3af">
-          {max}
-        </text>
       </svg>
 
       <div className="-mt-2 text-center">
